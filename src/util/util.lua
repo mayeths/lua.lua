@@ -30,3 +30,4 @@ function Util:assert(got, expect, errmsg)
 end
 
 
+return Util
