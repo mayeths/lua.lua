@@ -23,6 +23,7 @@ function Main:displayProtoInfo(proto)
     Main:printProtoHeader(proto)
     Main:printProtoCode(proto)
     Main:printProtoDetail(proto)
+    Main:printProtoFooter(proto)
 end
 
 
@@ -35,7 +36,7 @@ function Main:printProtoHeader(proto)
     if proto.IsVararg > 0 then
         varargFlag = "+vararg"
     end
-    Util:println("PROTO %s <%s:%d-%d> (%d instructions)",
+    Util:println("--- PROTO %s <%s:%d-%d> (%d instructions) ---",
         protoType, proto.Source, proto.LineDefined,
         proto.LastLineDefined, #proto.Code
     )
@@ -43,8 +44,8 @@ function Main:printProtoHeader(proto)
         proto.NumParams, varargFlag,
         proto.MaxStackSize, #proto.Upvalues
     )
-    Util:println("%d locals, %d constants, %d functions",
-        #proto.LocVars, #proto.Constants, #proto.Protos
+    Util:println("%d constants, %d locals, %d functions",
+        #proto.Constants, #proto.LocVars, #proto.Protos
     )
 end
 
@@ -85,6 +86,12 @@ function Main:printProtoDetail(proto)
         )
     end
 end
+
+
+function Main:printProtoFooter(proto)
+    Util:println("------")
+end
+
 
 
 function Main:constantToString(const)
