@@ -12,6 +12,3 @@ Header = {
     LUAC_NUM         = 370.5,
 }
 
-
-return Header
-

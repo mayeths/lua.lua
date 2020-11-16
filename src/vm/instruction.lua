@@ -83,5 +83,3 @@ function Instruction:CMode()
     return Opcodes[self:Opcode() + 1].argCMode
 end
 
-
-return Instruction

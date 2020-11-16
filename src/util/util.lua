@@ -29,5 +29,3 @@ function Util:assert(got, expect, errmsg)
     Util:panic(formattedMsg)
 end
 
-
-return Util

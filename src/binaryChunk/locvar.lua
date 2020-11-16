@@ -15,5 +15,3 @@ function LocVar:new(o)
     return o
 end
 
-
-return LocVar

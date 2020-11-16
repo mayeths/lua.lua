@@ -7,5 +7,3 @@ Tag = {
     LONG_STR  = 0x14,
 }
 
-
-return Tag

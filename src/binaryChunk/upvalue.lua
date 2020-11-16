@@ -13,5 +13,3 @@ function Upvalue:new(o)
     return o
 end
 
-
-return Upvalue

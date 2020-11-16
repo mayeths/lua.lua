@@ -15,5 +15,3 @@ function BinaryChunk:Undump(data)
     return reader:readProto("")
 end
 
-
-return BinaryChunk

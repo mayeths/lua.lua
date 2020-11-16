@@ -221,6 +221,3 @@ function Reader:checkHeader()
     Util:assert(self:readLuaNumber(),  Header.LUAC_NUM,         "[Reader:checkHeader ERROR] Float format mismatch!")
 end
 
-
-return Reader
-

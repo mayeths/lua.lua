@@ -35,5 +35,3 @@ function Prototype:new(o)
     return o
 end
 
-
-return Prototype
