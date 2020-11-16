@@ -1,6 +1,7 @@
 require("env")
 Env:updateSearchPath("src/?.lua")
 require("binaryChunk/binaryChunk")
+require("vm/Instruction")
 require("util/util")
 
 
@@ -23,7 +24,7 @@ function Main:displayProtoInfo(proto)
     Main:printProtoHeader(proto)
     Main:printProtoCode(proto)
     Main:printProtoDetail(proto)
-    Main:printProtoFooter(proto)
+    Main:printProtoFooter()
 end
 
 
@@ -52,12 +53,53 @@ end
 
 function Main:printProtoCode(proto)
     Util:println("body (%d):", #proto.Code)
+    Util:println("\tindex\tline\tinstruction\topname\t\toperand")
     for i, code in ipairs(proto.Code) do
         local line = "-"
         if #proto.LineInfo > 0 then
             line = string.format("%d", proto.LineInfo[i])
         end
-        Util:println("\t%d\t[%s]\t0x%08X", i, line, code)
+        local inst = Instruction:new({value = code})
+        Util:printf("\t%d\t[%s]\t0x%08X\t%s\t", i, line, code, inst:OpName())
+        Main:printOperands(inst)
+        Util:println("")
+    end
+end
+
+
+function Main:printOperands(inst)
+    local mode = inst:OpMode()
+    if mode == OPMODE.IABC then
+        local a, b, c = inst:ABC()
+        Util:printf("%d", a)
+        if inst:BMode() ~= OPARGMASK.OpArgN then
+            if b > 0xFF then
+                Util:printf(" %d", -1-(b&0xFF))
+            else
+                Util:printf(" %d", b)
+            end
+        end
+        if inst:CMode() ~= OPARGMASK.OpArgN then
+            if c > 0xFF then
+                Util:printf(" %d", -1-(c&0xFF))
+            else
+                Util:printf(" %d", c)
+            end
+        end
+    elseif mode == OPMODE.IABx then
+        local a, bx = inst:ABx()
+        Util:printf("%d", a)
+        if inst:BMode() == OPARGMASK.OpArgK then
+            Util:printf(" %d", -1-bx)
+        elseif inst:BMode() == OPARGMASK.OpArgU then
+            Util:printf(" %d", bx)
+        end
+    elseif mode == OPMODE.IAsBx then
+        local a, sbx = inst:AsBx()
+        Util:printf("%d %d", a, sbx)
+    elseif mode == OPMODE.IAx then
+        local ax = inst:Ax()
+        Util:printf("%d", -1-ax)
     end
 end
 
@@ -88,7 +130,7 @@ function Main:printProtoDetail(proto)
 end
 
 
-function Main:printProtoFooter(proto)
+function Main:printProtoFooter()
     Util:println("------")
 end
 
