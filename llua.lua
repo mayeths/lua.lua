@@ -1,7 +1,6 @@
 require("env")
 Env:updateSearchPath("src/?.lua")
-require("binaryChunk/binaryChunk")
-require("vm/Instruction")
+require("state/state")
 require("util/util")
 
 
@@ -9,139 +8,43 @@ Main = {}
 
 
 function Main:main()
-    if #arg < 1 then
-        Util:panic("[Main ERROR] Running LLUA require a bytecode file")
-    end
-    local fd = io.open(arg[1], "rb")
-    local data = fd:read("*all")
-    fd:close()
-    local proto = BinaryChunk:Undump(data)
-    Main:displayProtoInfo(proto)
+    local ls = LuaState:new()
+    ls:PushBoolean(true)
+    Main:printStack(ls)
+    ls:PushInteger(10)
+    Main:printStack(ls)
+    ls:PushNil()
+    Main:printStack(ls)
+    ls:PushString("hello")
+    Main:printStack(ls)
+    ls:PushValue(-4)
+    Main:printStack(ls)
+    ls:Replace(3)
+    Main:printStack(ls)
+    ls:SetTop(6)
+    Main:printStack(ls)
+    ls:Remove(-3)
+    Main:printStack(ls)
+    ls:SetTop(-5)
+    Main:printStack(ls)
 end
 
 
-function Main:displayProtoInfo(proto)
-    Main:printProtoHeader(proto)
-    Main:printProtoCode(proto)
-    Main:printProtoDetail(proto)
-    Main:printProtoFooter()
-end
-
-
-function Main:printProtoHeader(proto)
-    local protoType = "main"
-    local varargFlag = ""
-    if proto.LineDefined > 0 then
-        protoType = "function"
-    end
-    if proto.IsVararg > 0 then
-        varargFlag = "+vararg"
-    end
-    Util:println("--- PROTO %s <%s:%d-%d> (%d instructions) ---",
-        protoType, proto.Source, proto.LineDefined,
-        proto.LastLineDefined, #proto.Code
-    )
-    Util:printf("%d%s params, %d slots, %d upvalues, ",
-        proto.NumParams, varargFlag,
-        proto.MaxStackSize, #proto.Upvalues
-    )
-    Util:println("%d constants, %d locals, %d functions",
-        #proto.Constants, #proto.LocVars, #proto.Protos
-    )
-end
-
-
-function Main:printProtoCode(proto)
-    Util:println("body (%d):", #proto.Code)
-    Util:println("\tindex\tline\tinstruction\topname\t\toperand")
-    for i, code in ipairs(proto.Code) do
-        local line = "-"
-        if #proto.LineInfo > 0 then
-            line = string.format("%d", proto.LineInfo[i])
+function Main:printStack(ls)
+    local top = ls:GetTop()
+    for i = 1, top do
+        local t = ls:Type(i)
+        if t == LuaType.LUA_TBOOLEAN then
+            Util:printf("[%s]", tostring(ls:ToBoolean(i)))
+        elseif t == LuaType.LUA_TNUMBER then
+            Util:printf("[%s]", tostring(ls:ToNumber(i)))
+        elseif t == LuaType.LUA_TNIL then
+            Util:printf("[%s]", "nil")
+        elseif t == LuaType.LUA_TSTRING then
+            Util:printf('["%s"]', ls:ToString(i))
         end
-        local inst = Instruction:new({value = code})
-        Util:printf("\t%d\t[%s]\t0x%08X\t%s\t", i, line, code, inst:OpName())
-        Main:printOperands(inst)
-        Util:println("")
     end
-end
-
-
-function Main:printOperands(inst)
-    local mode = inst:OpMode()
-    if mode == OPMODE.IABC then
-        local a, b, c = inst:ABC()
-        Util:printf("%d", a)
-        if inst:BMode() ~= OPARGMASK.OpArgN then
-            if b > 0xFF then
-                Util:printf(" %d", -1-(b&0xFF))
-            else
-                Util:printf(" %d", b)
-            end
-        end
-        if inst:CMode() ~= OPARGMASK.OpArgN then
-            if c > 0xFF then
-                Util:printf(" %d", -1-(c&0xFF))
-            else
-                Util:printf(" %d", c)
-            end
-        end
-    elseif mode == OPMODE.IABx then
-        local a, bx = inst:ABx()
-        Util:printf("%d", a)
-        if inst:BMode() == OPARGMASK.OpArgK then
-            Util:printf(" %d", -1-bx)
-        elseif inst:BMode() == OPARGMASK.OpArgU then
-            Util:printf(" %d", bx)
-        end
-    elseif mode == OPMODE.IAsBx then
-        local a, sbx = inst:AsBx()
-        Util:printf("%d %d", a, sbx)
-    elseif mode == OPMODE.IAx then
-        local ax = inst:Ax()
-        Util:printf("%d", -1-ax)
-    end
-end
-
-
-function Main:printProtoDetail(proto)
-    Util:println("constants (%d):", #proto.Constants)
-    for i, const in ipairs(proto.Constants) do
-        Util:println("\t%d\t%s", i, Main:constantToString(const))
-    end
-
-    Util:println("locals (%d):", #proto.LocVars)
-    for i, locvar in ipairs(proto.LocVars) do
-        Util:println("\t%d\t%s\t%d\t%d",
-            i, locvar.VarName, locvar.StartPC, locvar.EndPC
-        )
-    end
-
-    Util:println("upvalues (%d):", #proto.Upvalues)
-    for i, upval in ipairs(proto.Upvalues) do
-        local upvalName = "-"
-        if #proto.UpvalueNames > 0 then
-            upvalName = proto.UpvalueNames[i]
-        end
-        Util:println("\t%d\t%s\t%d\t%d",
-            i, upvalName, upval.Instack, upval.Idx
-        )
-    end
-end
-
-
-function Main:printProtoFooter()
-    Util:println("------")
-end
-
-
-
-function Main:constantToString(const)
-    if type(const) == "string" then
-        return '"'..const..'"'
-    else
-        return tostring(const)
-    end
+    Util:println("")
 end
 
 
