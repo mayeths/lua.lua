@@ -1,6 +1,7 @@
 require("binaryChunk/header")
 require("binaryChunk/prototype")
 require("binaryChunk/tag")
+require("binaryChunk/locvar")
 require("binaryChunk/upvalue")
 require("util/util")
 
