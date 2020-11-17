@@ -1,5 +1,5 @@
 require("env")
-Env:updateSearchPath("src/?.lua")
+Env:updateSearchPath("runtime/?.lua")
 require("state/state")
 require("util/util")
 
