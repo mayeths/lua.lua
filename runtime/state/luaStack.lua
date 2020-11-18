@@ -1,4 +1,4 @@
-require("runtime/util/util")
+require("util/util")
 
 LuaStack = {
     slots = nil,

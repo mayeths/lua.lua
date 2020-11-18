@@ -1,6 +1,6 @@
 require("runtime/binaryChunk/binaryChunk")
 require("runtime/vm/Instruction")
-require("runtime/util/util")
+require("util/util")
 
 
 LLUAP = {}

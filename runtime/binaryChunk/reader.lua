@@ -3,7 +3,7 @@ require("runtime/binaryChunk/prototype")
 require("runtime/binaryChunk/tag")
 require("runtime/binaryChunk/locvar")
 require("runtime/binaryChunk/upvalue")
-require("runtime/util/util")
+require("util/util")
 
 
 Reader = {

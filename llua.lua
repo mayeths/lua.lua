@@ -1,5 +1,5 @@
 require("runtime/state/state")
-require("runtime/util/util")
+require("util/util")
 
 
 LLUA = {}
