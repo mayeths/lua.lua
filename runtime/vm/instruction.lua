@@ -1,4 +1,4 @@
-require("vm/opcodes")
+require("runtime/vm/opcodes")
 
 Instruction = {
     value = nil,

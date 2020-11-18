@@ -1,9 +1,9 @@
-require("binaryChunk/header")
-require("binaryChunk/prototype")
-require("binaryChunk/tag")
-require("binaryChunk/locvar")
-require("binaryChunk/upvalue")
-require("util/util")
+require("runtime/binaryChunk/header")
+require("runtime/binaryChunk/prototype")
+require("runtime/binaryChunk/tag")
+require("runtime/binaryChunk/locvar")
+require("runtime/binaryChunk/upvalue")
+require("runtime/util/util")
 
 
 Reader = {

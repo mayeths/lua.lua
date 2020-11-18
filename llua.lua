@@ -1,7 +1,5 @@
-require("env")
-Env:updateSearchPath("runtime/?.lua")
-require("state/state")
-require("util/util")
+require("runtime/state/state")
+require("runtime/util/util")
 
 
 Main = {}

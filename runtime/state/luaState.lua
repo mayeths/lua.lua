@@ -1,6 +1,6 @@
-require("state/luaStack")
-require("state/luaType")
-require("util/util")
+require("runtime/state/luaStack")
+require("runtime/state/luaType")
+require("runtime/util/util")
 LuaState = {
     stack = nil,
 }
