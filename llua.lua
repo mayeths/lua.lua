@@ -2,33 +2,33 @@ require("runtime/state/state")
 require("runtime/util/util")
 
 
-Main = {}
+LLUA = {}
 
 
-function Main:main()
+function LLUA:main()
     local ls = LuaState:new()
     ls:PushBoolean(true)
-    Main:printStack(ls)
+    LLUA:printStack(ls)
     ls:PushInteger(10)
-    Main:printStack(ls)
+    LLUA:printStack(ls)
     ls:PushNil()
-    Main:printStack(ls)
+    LLUA:printStack(ls)
     ls:PushString("hello")
-    Main:printStack(ls)
+    LLUA:printStack(ls)
     ls:PushValue(-4)
-    Main:printStack(ls)
+    LLUA:printStack(ls)
     ls:Replace(3)
-    Main:printStack(ls)
+    LLUA:printStack(ls)
     ls:SetTop(6)
-    Main:printStack(ls)
+    LLUA:printStack(ls)
     ls:Remove(-3)
-    Main:printStack(ls)
+    LLUA:printStack(ls)
     ls:SetTop(-5)
-    Main:printStack(ls)
+    LLUA:printStack(ls)
 end
 
 
-function Main:printStack(ls)
+function LLUA:printStack(ls)
     local top = ls:GetTop()
     for i = 1, top do
         local t = ls:Type(i)
@@ -46,4 +46,4 @@ function Main:printStack(ls)
 end
 
 
-Main:main()
+LLUA:main()
