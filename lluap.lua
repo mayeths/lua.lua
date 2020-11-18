@@ -14,23 +14,42 @@ function LLUAP:main()
     local data = fd:read("*all")
     fd:close()
     local proto = BinaryChunk:Undump(data)
-    LLUAP:displayProtoInfo(proto)
+    LLUAP:displayProtoInfo(proto, 1)
 end
 
 
-function LLUAP:displayProtoInfo(proto)
+function LLUAP:displayProtoInfo(proto, depth)
+    local queue = { proto }
+    local candidate = {}
+    while #queue ~= 0 and depth >= 1 do
+        local curr = table.remove(queue, 1)
+        candidate[#candidate+1] = curr
+        for i = 1, #curr.Protos do
+            queue[#queue + 1] = curr.Protos[i]
+        end
+        depth = depth - 1
+    end
+    for i = 1, #candidate do
+        LLUAP:printProto(candidate[i])
+    end
+end
+
+
+function LLUAP:printProto(proto)
+    Util:println("")
     LLUAP:printProtoHeader(proto)
     LLUAP:printProtoCode(proto)
     LLUAP:printProtoDetail(proto)
     LLUAP:printProtoFooter()
+    Util:println("")
 end
 
 
 function LLUAP:printProtoHeader(proto)
-    local protoType = "main"
+    local protoType = "Root"
     local varargFlag = ""
     if proto.LineDefined > 0 then
-        protoType = "function"
+        protoType = "Function"
     end
     if proto.IsVararg > 0 then
         varargFlag = "+vararg"
