@@ -1,18 +1,18 @@
 function LuaState:TypeName(tid)
-	if tid == LuaType.LUA_TNONE then
+    if tid == LuaType.LUA_TNONE then
         return "no value"
     elseif tid == LuaType.LUA_TNIL then
-		return "nil"
+        return "nil"
     elseif tid == LuaType.LUA_TBOOLEAN then
-		return "boolean"
+        return "boolean"
     elseif tid == LuaType.LUA_TNUMBER then
-		return "number"
+        return "number"
     elseif tid == LuaType.LUA_TSTRING then
-		return "string"
+        return "string"
     elseif tid == LuaType.LUA_TTABLE then
-		return "table"
+        return "table"
     elseif tid == LuaType.LUA_TFUNCTION then
-		return "function"
+        return "function"
     elseif tid == LuaType.LUA_TTHREAD then
         return "thread"
     else
