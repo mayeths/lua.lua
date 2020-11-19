@@ -1,4 +1,5 @@
 LuaType = {
+    -- https://github.com/lua/lua/blob/master/lua.h#L60
     LUA_TNIL = 0,
     LUA_TBOOLEAN = 1,
     LUA_TLIGHTUSERDATA = 2,

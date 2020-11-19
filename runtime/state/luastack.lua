@@ -60,9 +60,6 @@ function LuaStack:pop()
     local val = nil
     if #self.slots >= self.size then
         val = table.remove(self.slots, self.size)
-    else
-        -- self.slots = {1, true, "abc", nil, nil}
-        -- self.size = 5, #self.slots = 3
     end
     self.size = self.size - 1
     return val
