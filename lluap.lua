@@ -1,5 +1,5 @@
 require("runtime/binarychunk/binarychunk")
-require("runtime/vm/Instruction")
+require("runtime/vm/instruction")
 require("util/util")
 
 
