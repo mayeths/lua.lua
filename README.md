@@ -58,14 +58,15 @@ tar -xf $DST -C $INSTALL_TOP
 mv $INSTALL_TOP/lua53 $INSTALL_TOP/lua
 mv $INSTALL_TOP/luac53 $INSTALL_TOP/luac
 
-# Ensure libreadline.so.6 exists. Assuming on Ubuntu
-sudo apt-get install libreadline-dev
-cd /lib/x86_64-linux-gnu/
-sudo ln -s libreadline.so.7.0 libreadline.so.6 2> /dev/null
-
 # Add to PATH environment variable
 echo "export PATH=$INSTALL_TOP:\$PATH" >> ~/.bashrc
 source ~/.bashrc
+
+# (Optional) Ensure libreadline.so.6 exists to run lua
+# (Assuming on x86_64 Ubuntu)
+sudo apt-get install libreadline-dev
+cd /lib/x86_64-linux-gnu/
+sudo ln -s libreadline.so.7.0 libreadline.so.6 2> /dev/null
 
 # Test version (should print "Lua 5.3.3")
 lua -v
@@ -90,11 +91,6 @@ export OUTPUT=/tmp/lua53_source_code
 mkdir $OUTPUT 2>/dev/null
 tar -xf $DST -C $OUTPUT --strip-components=1
 
-# Ensure libreadline.so.6 exists. Assuming on Ubuntu
-sudo apt-get install libreadline-dev
-cd /lib/*-linux-gnu/
-sudo ln -s libreadline.so.7.0 libreadline.so.6 2> /dev/null
-
 # Build Lua 5.3.3 using make
 export INSTALL_TOP=~/lua53
 cd $OUTPUT
@@ -105,6 +101,12 @@ make install INSTALL_TOP=$INSTALL_TOP
 # Add to PATH environment variable
 echo "export PATH=$INSTALL_TOP/bin:\$PATH" >> ~/.bashrc
 source ~/.bashrc
+
+# (Optional) Ensure libreadline.so.6 exists to run lua
+# (Assuming on x86_64 Ubuntu)
+sudo apt-get install libreadline-dev
+cd /lib/x86_64-linux-gnu/
+sudo ln -s libreadline.so.7.0 libreadline.so.6 2> /dev/null
 
 # Test version (should print "Lua 5.3.3")
 lua -v
