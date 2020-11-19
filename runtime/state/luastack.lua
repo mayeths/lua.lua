@@ -2,8 +2,8 @@ require("util/util")
 
 LuaStack = {
     slots = nil,
-    size = nil,
-    capacity = nil, -- The maximum elements that slots can hold
+    size = nil,     -- The number of elements that slots holding
+    capacity = nil, -- The number of elements that slots can hold
 }
 
 
