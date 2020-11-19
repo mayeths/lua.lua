@@ -1,8 +1,8 @@
-require("runtime/binaryChunk/header")
-require("runtime/binaryChunk/prototype")
-require("runtime/binaryChunk/tag")
-require("runtime/binaryChunk/locvar")
-require("runtime/binaryChunk/upvalue")
+require("runtime/binarychunk/header")
+require("runtime/binarychunk/prototype")
+require("runtime/binarychunk/tag")
+require("runtime/binarychunk/locvar")
+require("runtime/binarychunk/upvalue")
 require("util/util")
 
 

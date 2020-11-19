@@ -1,4 +1,4 @@
-require("runtime/binaryChunk/reader")
+require("runtime/binarychunk/reader")
 
 
 BinaryChunk = {

@@ -1,4 +1,4 @@
-require("runtime/binaryChunk/binaryChunk")
+require("runtime/binarychunk/binarychunk")
 require("runtime/vm/Instruction")
 require("util/util")
 
