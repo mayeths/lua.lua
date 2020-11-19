@@ -1,4 +1,5 @@
 require("runtime/state/state")
+require("runtime/state/luaoperation")
 require("util/util")
 
 
@@ -6,25 +7,22 @@ LLUA = {}
 
 
 function LLUA:main()
-    local ls = LuaState:new()
-    ls:PushBoolean(true)
-    LLUA:printStack(ls)
-    ls:PushInteger(10)
-    LLUA:printStack(ls)
-    ls:PushNil()
-    LLUA:printStack(ls)
-    ls:PushString("hello")
-    LLUA:printStack(ls)
-    ls:PushValue(-4)
-    LLUA:printStack(ls)
-    ls:Replace(3)
-    LLUA:printStack(ls)
-    ls:SetTop(6)
-    LLUA:printStack(ls)
-    ls:Remove(-3)
-    LLUA:printStack(ls)
-    ls:SetTop(-5)
-    LLUA:printStack(ls)
+    local state = LuaState:new()
+    state:PushInteger(1)
+    state:PushString("2.0")
+    state:PushString("3.0")
+    state:PushNumber(4.0)
+    LLUA:printStack(state)
+    state:Arith(LuaOperation.LUA_OPADD)
+    LLUA:printStack(state)
+    state:Arith(LuaOperation.LUA_OPBNOT)
+    LLUA:printStack(state)
+    state:Len(2)
+    LLUA:printStack(state)
+    state:Concat(3)
+    LLUA:printStack(state)
+    state:PushBoolean(state:Compare(1, 2, LuaOperation.LUA_OPEQ))
+    LLUA:printStack(state)
 end
 
 
