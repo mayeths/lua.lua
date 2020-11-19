@@ -26,18 +26,18 @@ function LLUA:main()
 end
 
 
-function LLUA:printStack(ls)
-    local top = ls:GetTop()
+function LLUA:printStack(state)
+    local top = state:GetTop()
     for i = 1, top do
-        local t = ls:Type(i)
+        local t = state:Type(i)
         if t == LuaType.LUA_TBOOLEAN then
-            Util:printf("[%s]", tostring(ls:ToBoolean(i)))
+            Util:printf("[%s]", tostring(state:ToBoolean(i)))
         elseif t == LuaType.LUA_TNUMBER then
-            Util:printf("[%s]", tostring(ls:ToNumber(i)))
+            Util:printf("[%s]", tostring(state:ToNumber(i)))
         elseif t == LuaType.LUA_TNIL then
             Util:printf("[%s]", "nil")
         elseif t == LuaType.LUA_TSTRING then
-            Util:printf('["%s"]', ls:ToString(i))
+            Util:printf('["%s"]', state:ToString(i))
         end
     end
     Util:println("")
