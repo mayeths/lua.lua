@@ -1,3 +1,6 @@
+require("util/util")
+
+
 function LuaState:GetTop()
     return self.stack.size
 end
