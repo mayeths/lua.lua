@@ -123,19 +123,22 @@ end
 
 function LLUAP:printProtoDetail(proto)
     Util:println("constants (%d):", #proto.Constants)
-    for i, const in ipairs(proto.Constants) do
+    for i = 1, #proto.Constants do
+        local const = proto.Constants[i]
         Util:println("\t%d\t%s", i, LLUAP:constantToString(const))
     end
 
     Util:println("locals (%d):", #proto.LocVars)
-    for i, locvar in ipairs(proto.LocVars) do
+    for i = 1, #proto.LocVars do
+        local locvar = proto.LocVars[i]
         Util:println("\t%d\t%s\t%d\t%d",
             i, locvar.VarName, locvar.StartPC, locvar.EndPC
         )
     end
 
     Util:println("upvalues (%d):", #proto.Upvalues)
-    for i, upval in ipairs(proto.Upvalues) do
+    for i = 1, #proto.Upvalues do
+        local upval = proto.Upvalues[i]
         local upvalName = "-"
         if #proto.UpvalueNames > 0 then
             upvalName = proto.UpvalueNames[i]
