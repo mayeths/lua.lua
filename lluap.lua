@@ -52,7 +52,7 @@ function LLUAP:printProtoHeader(proto)
         protoType = "Function"
     end
     if proto.IsVararg > 0 then
-        varargFlag = "+vararg"
+        varargFlag = "(+vararg)"
     end
     Util:println("--- PROTO %s <%s:%d-%d> (%d instructions) ---",
         protoType, proto.Source, proto.LineDefined,
