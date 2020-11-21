@@ -6,7 +6,7 @@ require("runtime/operation/logical")
 require("util/util")
 
 
-Operator = {
+local Operator = {
     intFn = nil,
     floatFn = nil,
 }
@@ -22,7 +22,7 @@ function Operator:new(o)
 end
 
 
-Fn = {
+local Fn = {
     iadd  = function (a, b) return a + b end,
     fadd  = function (a, b) return a + b end,
     isub  = function (a, b) return a - b end,
@@ -46,7 +46,7 @@ Fn = {
 }
 
 
-Operators = {
+local Operators = {
     Operator:new({ intFn = Fn.iadd,  floatFn = Fn.fadd  }),
     Operator:new({ intFn = Fn.isub,  floatFn = Fn.fsub  }),
     Operator:new({ intFn = Fn.imul,  floatFn = Fn.fmul  }),
