@@ -62,6 +62,7 @@ local Operators = {
     Operator:new({ intFn = Fn.iunm,  floatFn = Fn.funm  }),
     Operator:new({ intFn = Fn.bnot,  floatFn = nil      }),
 }
+local OPERATORS_OFFSET = 1
 
 
 -- http://www.lua.org/manual/5.3/manual.html#lua_arith
@@ -76,8 +77,7 @@ function LuaState:Arith(opid)
         a = self.stack:pop()
     end
 
-    -- LuaOperation start from 0, but Operators start from 1
-    local op = Operators[opid + 1]
+    local op = Operators[opid + OPERATORS_OFFSET]
     local isBitwise = op.floatFn == nil
     local tryIntFnFirst = op.intFn ~= nil
     if isBitwise then
