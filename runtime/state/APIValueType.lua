@@ -157,7 +157,7 @@ function LuaState:ToStringX(idx)
     if t == "string" then
         return val, true
     elseif t == "number" then
-        return tostring(t), true
+        return tostring(val), true
     else
         return "", false
     end
