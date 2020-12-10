@@ -3,22 +3,22 @@ require("runtime/vm/instruction")
 require("util/util")
 
 
-LLUAP = {}
+LLUAD = {}
 
 
-function LLUAP:main()
+function LLUAD:main()
     if #arg < 1 then
-        Util:panic("[LLUAP ERROR] Running LLUAP require a bytecode file")
+        Util:panic("[LLUAD ERROR] Running LLUAD require a bytecode file")
     end
     local fd = io.open(arg[1], "rb")
     local data = fd:read("*all")
     fd:close()
     local proto = BinaryChunk:Undump(data)
-    LLUAP:displayProtoInfo(proto, 1)
+    LLUAD:displayProtoInfo(proto, 1)
 end
 
 
-function LLUAP:displayProtoInfo(proto, depth)
+function LLUAD:displayProtoInfo(proto, depth)
     local queue = { proto }
     local candidate = {}
     while #queue ~= 0 and depth >= 1 do
@@ -30,22 +30,22 @@ function LLUAP:displayProtoInfo(proto, depth)
         depth = depth - 1
     end
     for i = 1, #candidate do
-        LLUAP:printProto(candidate[i])
+        LLUAD:printProto(candidate[i])
     end
 end
 
 
-function LLUAP:printProto(proto)
+function LLUAD:printProto(proto)
     Util:println("")
-    LLUAP:printProtoHeader(proto)
-    LLUAP:printProtoCode(proto)
-    LLUAP:printProtoDetail(proto)
-    LLUAP:printProtoFooter()
+    LLUAD:printProtoHeader(proto)
+    LLUAD:printProtoCode(proto)
+    LLUAD:printProtoDetail(proto)
+    LLUAD:printProtoFooter()
     Util:println("")
 end
 
 
-function LLUAP:printProtoHeader(proto)
+function LLUAD:printProtoHeader(proto)
     local protoType = "Root"
     local varargFlag = ""
     if proto.LineDefined > 0 then
@@ -68,7 +68,7 @@ function LLUAP:printProtoHeader(proto)
 end
 
 
-function LLUAP:printProtoCode(proto)
+function LLUAD:printProtoCode(proto)
     Util:println("body (%d):", #proto.Code)
     Util:println("\tindex\tline\tinstruction\topname\t\toperand")
     for i, code in ipairs(proto.Code) do
@@ -78,13 +78,13 @@ function LLUAP:printProtoCode(proto)
         end
         local inst = Instruction:new({value = code})
         Util:printf("\t%d\t[%s]\t0x%08X\t%s\t", i, line, code, inst:OpName())
-        LLUAP:printOperands(inst)
+        LLUAD:printOperands(inst)
         Util:println("")
     end
 end
 
 
-function LLUAP:printOperands(inst)
+function LLUAD:printOperands(inst)
     local mode = inst:OpMode()
     if mode == OPMODE.IABC then
         local a, b, c = inst:ABC()
@@ -121,11 +121,11 @@ function LLUAP:printOperands(inst)
 end
 
 
-function LLUAP:printProtoDetail(proto)
+function LLUAD:printProtoDetail(proto)
     Util:println("constants (%d):", #proto.Constants)
     for i = 1, #proto.Constants do
         local const = proto.Constants[i]
-        Util:println("\t%d\t%s", i, LLUAP:constantToString(const))
+        Util:println("\t%d\t%s", i, LLUAD:constantToString(const))
     end
 
     Util:println("locals (%d):", #proto.LocVars)
@@ -150,13 +150,13 @@ function LLUAP:printProtoDetail(proto)
 end
 
 
-function LLUAP:printProtoFooter()
+function LLUAD:printProtoFooter()
     Util:println("------")
 end
 
 
 
-function LLUAP:constantToString(const)
+function LLUAD:constantToString(const)
     if type(const) == "string" then
         return '"'..const..'"'
     else
@@ -165,4 +165,4 @@ function LLUAP:constantToString(const)
 end
 
 
-LLUAP:main()
+LLUAD:main()
