@@ -12,35 +12,17 @@ function LLUA:main()
     state:PushString("2.0")
     state:PushString("3.0")
     state:PushNumber(4.0)
-    LLUA:printStack(state)
+    state:printStack()
     state:Arith(LuaOperation.LUA_OPADD)
-    LLUA:printStack(state)
+    state:printStack()
     state:Arith(LuaOperation.LUA_OPBNOT)
-    LLUA:printStack(state)
+    state:printStack()
     state:Len(2)
-    LLUA:printStack(state)
+    state:printStack()
     state:Concat(3)
-    LLUA:printStack(state)
+    state:printStack()
     state:PushBoolean(state:Compare(1, 2, LuaOperation.LUA_OPEQ))
-    LLUA:printStack(state)
-end
-
-
-function LLUA:printStack(state)
-    local top = state:GetTop()
-    for i = 1, top do
-        local t = state:Type(i)
-        if t == LuaType.LUA_TBOOLEAN then
-            Util:printf("[%s]", tostring(state:ToBoolean(i)))
-        elseif t == LuaType.LUA_TNUMBER then
-            Util:printf("[%s]", tostring(state:ToNumber(i)))
-        elseif t == LuaType.LUA_TNIL then
-            Util:printf("[%s]", "nil")
-        elseif t == LuaType.LUA_TSTRING then
-            Util:printf('["%s"]', state:ToString(i))
-        end
-    end
-    Util:println("")
+    state:printStack()
 end
 
 
