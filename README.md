@@ -5,9 +5,9 @@
 
 ### Dependence
 
-This project is build on the top of Lua 5.3.3, which has `Integer`, `Package`,
-and other useful features. Lua 5.4 and higher have changed the bytecode header,
-so it's not compatible with them at the moment.
+This project is build on the top of Lua 5.3.3, which has `Integer`, `Package`, and
+other useful features. Lua 5.4 and higher have changed the header of binary
+chunk, so lua.lua is not compatible with them at the moment.
 
 
 <details>
@@ -16,6 +16,8 @@ so it's not compatible with them at the moment.
 Modify `$install_top=` bellow if installing to another directory.
 
 ```powershell
+# Powershell
+
 # Download Lua 5.3.3 from sourceforge
 $src="https://master.dl.sourceforge.net/project/luabinaries/5.3.3/Tools%20Executables/lua-5.3.3_Win64_bin.zip"
 $dst="$env:TMP/lua53.zip"
@@ -46,6 +48,8 @@ luac.exe -v
 Modify `export INSTALL_TOP=` bellow if installing to another directory.
 
 ```bash
+#!/bin/bash
+
 # Download Lua 5.3.3 from sourceforge
 export SRC=https://master.dl.sourceforge.net/project/luabinaries/5.3.3/Tools%20Executables/lua-5.3.3_Linux32_64_bin.tar.gz
 export DST=/tmp/lua53.tar.gz
@@ -81,6 +85,8 @@ luac -v
 Modify `export INSTALL_TOP=` bellow if installing to another directory.
 
 ```bash
+#!/bin/bash
+
 # Download Lua 5.3.3 source code from lua.org/ftp/
 export SRC=https://www.lua.org/ftp/lua-5.3.3.tar.gz
 export DST=/tmp/lua53_source_code.tar.gz
