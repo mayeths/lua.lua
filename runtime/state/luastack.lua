@@ -1,4 +1,4 @@
-require("util/util")
+require("common/util")
 
 LuaStack = {
     slots = nil,

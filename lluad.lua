@@ -1,6 +1,6 @@
 require("runtime/binarychunk/binarychunk")
 require("runtime/vm/instruction")
-require("util/util")
+require("common/util")
 
 
 LLUAD = {}

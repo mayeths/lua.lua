@@ -3,7 +3,7 @@ require("runtime/operation/arithmetic")
 require("runtime/operation/compare")
 require("runtime/operation/convert")
 require("runtime/operation/logical")
-require("util/util")
+require("common/util")
 
 
 local Operator = {
