@@ -11,7 +11,7 @@ SCENARIO("Testing common/arg basic function", function ()
         SETUP(function ()
             name = "TEST"
             desc = "test arg function"
-            test_arg = ARG:new(name, desc, "-", {
+            test_arg = ARG:new(name, desc, "-", {}, {
                 HELP = ARG:boolopt("h", "Print usage"),
                 DEPTH = ARG:numbopt("depth", "The depth of stack", 0),
                 OUTPUT = ARG:stropt("o", "Redirect output to file", "a.txt"),
