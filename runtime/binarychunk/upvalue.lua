@@ -1,4 +1,4 @@
-Upvalue = {
+local Upvalue = {
     Instack = nil,
     Idx = nil,
 }
@@ -12,3 +12,4 @@ function Upvalue:new(instack, idx)
     return self
 end
 
+return Upvalue
