@@ -1,4 +1,4 @@
-LocVar = {
+local LocVar = {
     VarName = nil,
     StartPC = nil,
     EndPC = nil,
@@ -14,3 +14,4 @@ function LocVar:new(varname, startPC, endPC)
     return self
 end
 
+return LocVar
