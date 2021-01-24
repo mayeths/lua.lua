@@ -11,12 +11,11 @@ Reader = {
 }
 
 
-function Reader:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    self.data = o.data or ""
-    return o
+function Reader:new(data)
+    Reader.__index = Reader
+    self = setmetatable({}, Reader)
+    self.data = data
+    return self
 end
 
 
