@@ -7,14 +7,13 @@ LuaStack = {
 }
 
 
-function LuaStack:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    self.slots = o.slots or {}
-    self.size = o.size or 0
-    self.capacity = o.capacity or 0
-    return o
+function LuaStack:new(capacity)
+    LuaStack.__index = LuaStack
+    self = setmetatable({}, LuaStack)
+    self.slots = {}
+    self.size = 0
+    self.capacity = capacity
+    return self
 end
 
 

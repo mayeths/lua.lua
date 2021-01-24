@@ -10,7 +10,7 @@ function LuaState:new(capacity)
     LuaState.__index = LuaState
     self = setmetatable({}, LuaState)
     self.__index = self
-    self.stack = LuaStack:new({ capacity = 20 })
+    self.stack = LuaStack:new(20)
     return self
 end
 
