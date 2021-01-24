@@ -3,36 +3,36 @@ local Util = require("common/util")
 
 
 function SCENARIO(name, body)
-    __CATCH_HANDLE_SCOPE__(Color:blue("Scenario"), name, body)
+    __LEST_HANDLE_SCOPE__(Color:blue("Scenario"), name, body)
 end
 
 
 function GIVEN(name, body)
-    __CATCH_SETUPS__ = {}
-    __CATCH_TEARDOWNS__ = {}
-    __CATCH_HANDLE_SCOPE__("Given", name, body)
+    __LEST_SETUPS__ = {}
+    __LEST_TEARDOWNS__ = {}
+    __LEST_HANDLE_SCOPE__("Given", name, body)
 end
 
 
 function SETUP(fn)
-    __CATCH_SETUPS__[#__CATCH_SETUPS__ + 1] = fn
+    __LEST_SETUPS__[#__LEST_SETUPS__ + 1] = fn
 end
 
 
 function TEARDOWN(fn)
-    __CATCH_TEARDOWNS__[#__CATCH_TEARDOWNS__ + 1] = fn
+    __LEST_TEARDOWNS__[#__LEST_TEARDOWNS__ + 1] = fn
 end
 
 
 function IT_SHOULD(name, body)
-    for _, setup in ipairs(__CATCH_SETUPS__) do
+    for _, setup in ipairs(__LEST_SETUPS__) do
         local status, err = pcall(setup)
-        __CATCH_CHECK_PCALL__(status, err)
+        __LEST_CHECK_PCALL__(status, err)
     end
-    __CATCH_HANDLE_SCOPE__("It should", name, body)
-    for _, teardown in ipairs(__CATCH_TEARDOWNS__) do
+    __LEST_HANDLE_SCOPE__("It should", name, body)
+    for _, teardown in ipairs(__LEST_TEARDOWNS__) do
         local status, err = pcall(teardown)
-        __CATCH_CHECK_PCALL__(status, err)
+        __LEST_CHECK_PCALL__(status, err)
     end
 end
 
@@ -40,31 +40,31 @@ end
 function EXPECT(val)
     return {
         TOEQUAL = function (target)
-            __CATCH_CONFIRM_EXPECT__(val, target, "to equal")
+            __LEST_CONFIRM_EXPECT__(val, target, "to equal")
         end,
         TOBE = function (typ)
-            __CATCH_CONFIRM_EXPECT__(type(val), typ, "to be")
+            __LEST_CONFIRM_EXPECT__(type(val), typ, "to be")
         end,
     }
 end
 
 
-function __CATCH_HANDLE_SCOPE__(scope, name, body)
-    __CATCH_SCOPE_DEPTH__ = __CATCH_SCOPE_DEPTH__ or 0
+function __LEST_HANDLE_SCOPE__(scope, name, body)
+    __LEST_SCOPE_DEPTH__ = __LEST_SCOPE_DEPTH__ or 0
     Util:println(
-        string.rep(" ", __CATCH_SCOPE_DEPTH__ * 4)..
+        string.rep(" ", __LEST_SCOPE_DEPTH__ * 4)..
         scope.." "..name
     )
 
-    __CATCH_SCOPE_DEPTH__ = __CATCH_SCOPE_DEPTH__ + 1
+    __LEST_SCOPE_DEPTH__ = __LEST_SCOPE_DEPTH__ + 1
     local status, err = pcall(body)
-    __CATCH_SCOPE_DEPTH__ = __CATCH_SCOPE_DEPTH__ - 1
+    __LEST_SCOPE_DEPTH__ = __LEST_SCOPE_DEPTH__ - 1
 
-    __CATCH_CHECK_PCALL__(status, err)
+    __LEST_CHECK_PCALL__(status, err)
 end
 
 
-function __CATCH_CHECK_PCALL__(status, err)
+function __LEST_CHECK_PCALL__(status, err)
     if status == true then
         return
     end
@@ -72,12 +72,12 @@ function __CATCH_CHECK_PCALL__(status, err)
     local idx1, idx2 = string.find(err, ":%d+:")
     local fname = string.sub(err, 1, idx1 - 1)
     local lineno = string.sub(err, idx1 + 1, idx2 - 1)
-    __CATCH_PRINT_SOURCE__(fname, lineno)
+    __LEST_PRINT_SOURCE__(fname, lineno)
     os.exit(1)
 end
 
 
-function __CATCH_CONFIRM_EXPECT__(gotval, expectval, connectword)
+function __LEST_CONFIRM_EXPECT__(gotval, expectval, connectword)
     if expectval == gotval then
         return
     end
@@ -90,12 +90,12 @@ function __CATCH_CONFIRM_EXPECT__(gotval, expectval, connectword)
         " expecting "..tostring(gotval)..
         " "..connectword.." "..tostring(expectval)
     )
-    __CATCH_PRINT_SOURCE__(fname, lineno)
+    __LEST_PRINT_SOURCE__(fname, lineno)
     os.exit(1)
 end
 
 
-function __CATCH_PRINT_SOURCE__(fname, lineno)
+function __LEST_PRINT_SOURCE__(fname, lineno)
     lineno = math.floor(lineno)
     local file = io.open(fname, "r")
     local buf = {}
