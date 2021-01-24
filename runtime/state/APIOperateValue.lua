@@ -12,13 +12,12 @@ local Operator = {
 }
 
 
-function Operator:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    self.intFn = o.intFn or nil
-    self.floatFn = o.floatFn or nil
-    return o
+function Operator:new(intFn, floatFn)
+    Operator.__index = Operator
+    self = setmetatable({}, Operator)
+    self.intFn = intFn or nil
+    self.floatFn = floatFn or nil
+    return self
 end
 
 
@@ -47,20 +46,20 @@ local Fn = {
 
 
 local Operators = {
-    Operator:new({ intFn = Fn.iadd,  floatFn = Fn.fadd  }),
-    Operator:new({ intFn = Fn.isub,  floatFn = Fn.fsub  }),
-    Operator:new({ intFn = Fn.imul,  floatFn = Fn.fmul  }),
-    Operator:new({ intFn = Fn.imod,  floatFn = Fn.fmod  }),
-    Operator:new({ intFn = nil,      floatFn = Fn.pow   }),
-    Operator:new({ intFn = nil,      floatFn = Fn.div   }),
-    Operator:new({ intFn = Fn.iidiv, floatFn = Fn.fidiv }),
-    Operator:new({ intFn = Fn.band,  floatFn = nil      }),
-    Operator:new({ intFn = Fn.bor,   floatFn = nil      }),
-    Operator:new({ intFn = Fn.bxor,  floatFn = nil      }),
-    Operator:new({ intFn = Fn.shl,   floatFn = nil      }),
-    Operator:new({ intFn = Fn.shr,   floatFn = nil      }),
-    Operator:new({ intFn = Fn.iunm,  floatFn = Fn.funm  }),
-    Operator:new({ intFn = Fn.bnot,  floatFn = nil      }),
+    Operator:new(Fn.iadd,  Fn.fadd  ),
+    Operator:new(Fn.isub,  Fn.fsub  ),
+    Operator:new(Fn.imul,  Fn.fmul  ),
+    Operator:new(Fn.imod,  Fn.fmod  ),
+    Operator:new(nil,      Fn.pow   ),
+    Operator:new(nil,      Fn.div   ),
+    Operator:new(Fn.iidiv, Fn.fidiv ),
+    Operator:new(Fn.band,  nil      ),
+    Operator:new(Fn.bor,   nil      ),
+    Operator:new(Fn.bxor,  nil      ),
+    Operator:new(Fn.shl,   nil      ),
+    Operator:new(Fn.shr,   nil      ),
+    Operator:new(Fn.iunm,  Fn.funm  ),
+    Operator:new(Fn.bnot,  nil      ),
 }
 local OPERATORS_OFFSET = 1
 
