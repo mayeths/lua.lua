@@ -1,5 +1,5 @@
 require("runtime/state/luaoperation")
-require("runtime/operation/arithmetic")
+local Arith = require("runtime/operation/arithmetic")
 require("runtime/operation/compare")
 require("runtime/operation/convert")
 require("runtime/operation/logical")

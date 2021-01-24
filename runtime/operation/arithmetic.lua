@@ -1,4 +1,4 @@
-Arith = {}
+local Arith = {}
 
 
 function Arith:isinf(num, sign)
@@ -42,3 +42,4 @@ function Arith:ffloordiv(a, b)
     return math.floor(a / b)
 end
 
+return Arith
