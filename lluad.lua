@@ -1,4 +1,4 @@
-require("runtime/binarychunk/binarychunk")
+local BinaryChunk = require("runtime/binarychunk/binarychunk")
 require("runtime/vm/instruction")
 local Util = require("common/util")
 

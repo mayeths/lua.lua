@@ -1,7 +1,7 @@
 require("runtime/binarychunk/reader")
 
 
-BinaryChunk = {
+local BinaryChunk = {
     header = nil,
     sizeUpvalues = nil,
     mainFunc = nil,
@@ -15,3 +15,4 @@ function BinaryChunk:Undump(data)
     return reader:readProto("")
 end
 
+return BinaryChunk
