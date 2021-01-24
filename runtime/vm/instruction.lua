@@ -1,4 +1,4 @@
-require("runtime/vm/opcodes")
+local Opcodes = require("runtime/vm/opcodes")
 
 local Instruction = {
     value = nil,

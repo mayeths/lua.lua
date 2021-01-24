@@ -1,4 +1,4 @@
-Opcode = {
+local Opcode = {
     testFlag = nil,
     setAFlag = nil,
     argBMode = nil,
@@ -138,3 +138,4 @@ Opcodes = {
     Opcode:new(0, 0, OPARGMASK.OpArgU, OPARGMASK.OpArgU, OPMODE.IAx,   "EXTRAARG"), -- extra (larger) argument for previous opcode
 }
 
+return Opcodes
