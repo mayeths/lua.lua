@@ -1,4 +1,4 @@
-Compare = {}
+local Compare = {}
 
 
 function Compare:eq(a, b)
@@ -14,3 +14,5 @@ end
 function Compare:le(a, b)
     return a <= b
 end
+
+return Compare
