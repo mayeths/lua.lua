@@ -1,4 +1,4 @@
-Logical = {}
+local Logical = {}
 
 function Logical:shiftleft(a, n)
     if n >= 0 then
@@ -16,3 +16,5 @@ function Logical:shiftright(a, n)
         return a << n
     end
 end
+
+return Logical
