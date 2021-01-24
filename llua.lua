@@ -1,4 +1,4 @@
-require("runtime/state/state")
+local LuaState = require("runtime/state/state")
 local LuaOperation = require("runtime/state/luaoperation")
 local Util = require("common/util")
 
