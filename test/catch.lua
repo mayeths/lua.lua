@@ -1,4 +1,4 @@
-require("common/color")
+local Color = require("common/color")
 local Util = require("common/util")
 
 

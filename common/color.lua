@@ -1,4 +1,4 @@
-Color = {
+local Color = {
     RED = "\27[31m",
     GREEN = "\27[32m",
     ORANGE = "\27[33m",
@@ -15,3 +15,5 @@ end
 function Color:blue(str)
     return self.BLUE..str..self.NC
 end
+
+return Color
