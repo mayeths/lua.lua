@@ -1,4 +1,4 @@
-Tag = {
+local Tag = {
     NIL       = 0x00,
     BOOLEAN   = 0x01,
     NUMBER    = 0x03,
@@ -7,3 +7,4 @@ Tag = {
     LONG_STR  = 0x14,
 }
 
+return Tag
