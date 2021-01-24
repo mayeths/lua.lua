@@ -1,4 +1,4 @@
-Header = {
+local Header = {
     LUA_SIGNATURE    = "\x1bLua",-- 1B4C7561
     LUAC_VERSION     = 0x53,
     LUAC_FORMAT      = 0,
@@ -12,3 +12,4 @@ Header = {
     LUAC_NUM         = 370.5,
 }
 
+return Header

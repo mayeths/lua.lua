@@ -1,4 +1,4 @@
-require("runtime/binarychunk/header")
+local Header = require("runtime/binarychunk/header")
 require("runtime/binarychunk/prototype")
 require("runtime/binarychunk/tag")
 require("runtime/binarychunk/locvar")
