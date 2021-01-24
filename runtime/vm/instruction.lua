@@ -24,12 +24,11 @@ Instruction.MAXARG_Bx = MAXARG_Bx
 Instruction.MAXARG_sBx = MAXARG_sBx
 
 
-function Instruction:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    self.value = o.value or 0
-    return o
+function Instruction:new(value)
+    Instruction.__index = Instruction
+    self = setmetatable({}, Instruction)
+    self.value = value or 0
+    return self
 end
 
 

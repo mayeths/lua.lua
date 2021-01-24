@@ -76,7 +76,7 @@ function LLUAD:printProtoCode(proto)
         if #proto.LineInfo > 0 then
             line = string.format("%d", proto.LineInfo[i])
         end
-        local inst = Instruction:new({value = code})
+        local inst = Instruction:new(code)
         Util:printf("\t%d\t[%s]\t0x%08X\t%s\t", i, line, code, inst:OpName())
         LLUAD:printOperands(inst)
         Util:println("")
