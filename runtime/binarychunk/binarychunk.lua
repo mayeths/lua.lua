@@ -1,4 +1,4 @@
-require("runtime/binarychunk/reader")
+local Reader = require("runtime/binarychunk/reader")
 
 
 local BinaryChunk = {

@@ -6,7 +6,7 @@ require("runtime/binarychunk/upvalue")
 local Util = require("common/util")
 
 
-Reader = {
+local Reader = {
     data = "",
 }
 
@@ -221,3 +221,4 @@ function Reader:checkHeader()
     Util:assert(self:readLuaNumber(),  Header.LUAC_NUM,         "[Reader:checkHeader ERROR] Float format mismatch!")
 end
 
+return Reader
