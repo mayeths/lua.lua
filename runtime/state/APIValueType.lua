@@ -1,3 +1,4 @@
+local LuaState = require("runtime/state/luastate")
 local Util = require("common/util")
 
 

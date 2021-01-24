@@ -1,4 +1,4 @@
-require("runtime/state/state")
+local LuaState = require("runtime/state/state")
 require("test/catch")
 
 SCENARIO("Testing runtime/state/state basic function", function ()

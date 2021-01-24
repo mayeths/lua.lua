@@ -1,7 +1,8 @@
 local LuaStack = require("runtime/state/luastack")
 require("runtime/state/luatype")
 local Util = require("common/util")
-LuaState = {
+
+local LuaState = {
     stack = nil,
 }
 
@@ -31,3 +32,5 @@ function LuaState:printStack()
     end
     Util:println("")
 end
+
+return LuaState

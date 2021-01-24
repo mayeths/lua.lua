@@ -1,3 +1,4 @@
+local LuaState = require("runtime/state/luastate")
 local LuaOperation = require("runtime/state/luaoperation")
 local Arith = require("runtime/operation/arithmetic")
 local Compare = require("runtime/operation/compare")
