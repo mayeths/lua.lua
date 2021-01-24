@@ -9,7 +9,7 @@ local Arg = {
     PARAM = nil,
     UNMATCHED = nil,
 }
-local OPTION = {
+local Option = {
     name = nil,
     desc = nil,
     typ = nil,
@@ -135,28 +135,28 @@ end
 
 
 function Arg:boolopt(name, desc)
-    return OPTION:new(name, desc, "boolean", false, nil)
+    return Option:new(name, desc, "boolean", false, nil)
 end
 
 
 function Arg:numbopt(name, desc, defaultNumb)
-    return OPTION:new(name, desc, "number", defaultNumb, nil)
+    return Option:new(name, desc, "number", defaultNumb, nil)
 end
 
 
 function Arg:stropt(name, desc, defaultStr)
-    return OPTION:new(name, desc, "string", defaultStr, nil)
+    return Option:new(name, desc, "string", defaultStr, nil)
 end
 
 
 function Arg:enumopt(name, desc, defaultValue, enumValues)
-    return OPTION:new(name, desc, "enum", defaultValue, enumValues)
+    return Option:new(name, desc, "enum", defaultValue, enumValues)
 end
 
 
-function OPTION:new(name, desc, typ, defaultValue, enumValues)
-    OPTION.__index = OPTION
-    self = setmetatable({}, OPTION)
+function Option:new(name, desc, typ, defaultValue, enumValues)
+    Option.__index = Option
+    self = setmetatable({}, Option)
     self.name = name
     self.desc = desc
     self.typ = typ
@@ -173,7 +173,7 @@ function OPTION:new(name, desc, typ, defaultValue, enumValues)
 end
 
 
-function OPTION:isValidEnumVal(a)
+function Option:isValidEnumVal(a)
     if type(self.enumValues) ~= "table" then
         Util:panic("Not valid enumValues")
     end
