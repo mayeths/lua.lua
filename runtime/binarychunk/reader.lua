@@ -95,21 +95,23 @@ function Reader:readProto(parentSource)
     if source == "" then
         source = parentSource
     end
-    return Prototype:new({
-        Source          = source,
-        LineDefined     = self:readUint32(),
-        LastLineDefined = self:readUint32(),
-        NumParams       = self:readByte(),
-        IsVararg        = self:readByte(),
-        MaxStackSize    = self:readByte(),
-        Code            = self:readCode(),
-        Constants       = self:readConstants(),
-        Upvalues        = self:readUpvalues(),
-        Protos          = self:readProtos(source),
-        LineInfo        = self:readLineInfo(),
-        LocVars         = self:readLocVars(),
-        UpvalueNames    = self:readUpvalueNames(),
-    })
+    local lineDefined = self:readUint32()
+    local lastLineDefined = self:readUint32()
+    local numParams = self:readByte()
+    local isVararg = self:readByte()
+    local maxStackSize = self:readByte()
+    local code = self:readCode()
+    local constants = self:readConstants()
+    local upvalues = self:readUpvalues()
+    local protos = self:readProtos(source)
+    local lineInfo = self:readLineInfo()
+    local locVars = self:readLocVars()
+    local upvalueNames = self:readUpvalueNames()
+    return Prototype:new(
+        source, lineDefined, lastLineDefined,
+        numParams, isVararg, maxStackSize,
+        code, constants, upvalues, protos,
+        lineInfo, locVars, upvalueNames)
 end
 
 

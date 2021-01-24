@@ -15,23 +15,22 @@ Prototype = {
 }
 
 
-function Prototype:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    self.Source = o.Source or ""
-    self.LineDefined = o.LineDefined or 0
-    self.LastLineDefined = o.LastLineDefined or 0
-    self.NumParams = o.NumParams or 0
-    self.IsVararg = o.IsVararg or false
-    self.MaxStackSize = o.MaxStackSize or 0
-    self.Code = o.Code or {}
-    self.Constants = o.Constants or {}
-    self.Upvalues = o.Upvalues or {}
-    self.Protos = o.Protos or {}
-    self.LineInfo = o.LineInfo or {}
-    self.LocVars = o.LocVars or {}
-    self.UpvalueNames = o.UpvalueNames or {}
-    return o
+function Prototype:new(source, lineDefined, lastLineDefined, numParams, isVararg, maxStackSize, code, constants, upvalues, protos, lineInfo, locVars, upvalueNames)
+    Prototype.__index = Prototype
+    self = setmetatable({}, Prototype)
+    self.Source = source
+    self.LineDefined = lineDefined
+    self.LastLineDefined = lastLineDefined
+    self.NumParams = numParams
+    self.IsVararg = isVararg
+    self.MaxStackSize = maxStackSize
+    self.Code = code
+    self.Constants = constants
+    self.Upvalues = upvalues
+    self.Protos = protos
+    self.LineInfo = lineInfo
+    self.LocVars = locVars
+    self.UpvalueNames = upvalueNames
+    return self
 end
 
