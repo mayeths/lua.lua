@@ -1,19 +1,19 @@
 local Util = require("common/util")
-require("common/arg")
+local Arg = require("common/arg")
 LLUAR = {
     NAME = "Lua.lua runtime",
     VERSION = "0.1.0",
     INFO = "Copyright (C) 2021 Mayeths",
 }
-LLUAR_ARG = ARG:new("lluar", "The runtime of lua.lua", "-",
+LLUAR_ARG = Arg:new("lluar", "The runtime of lua.lua", "-",
     {
         param_name = "binarychunk",
         unmatched_name = "args"
     }, {
-        HELP = ARG:boolopt("h", "Print this help"),
-        VERSION = ARG:boolopt("v", "Print current version"),
-        OUTPUT = ARG:stropt("o", "Output to specific file", "a.out"),
-        DEBUG_LEVEL = ARG:enumopt(
+        HELP = Arg:boolopt("h", "Print this help"),
+        VERSION = Arg:boolopt("v", "Print current version"),
+        OUTPUT = Arg:stropt("o", "Output to specific file", "a.out"),
+        DEBUG_LEVEL = Arg:enumopt(
             "debug", "Debug level",
             "0", {"0", "1", "2", "3"}
         ),

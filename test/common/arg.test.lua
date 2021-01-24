@@ -1,4 +1,4 @@
-require("common/arg")
+local Arg = require("common/arg")
 require("test/catch")
 
 SCENARIO("Testing common/arg basic function", function ()
@@ -11,11 +11,11 @@ SCENARIO("Testing common/arg basic function", function ()
         SETUP(function ()
             name = "TEST"
             desc = "test arg function"
-            test_arg = ARG:new(name, desc, "-", {}, {
-                HELP = ARG:boolopt("h", "Print usage"),
-                DEPTH = ARG:numbopt("depth", "The depth of stack", 0),
-                OUTPUT = ARG:stropt("o", "Redirect output to file", "a.txt"),
-                OPTIMIZATION = ARG:enumopt(
+            test_arg = Arg:new(name, desc, "-", {}, {
+                HELP = Arg:boolopt("h", "Print usage"),
+                DEPTH = Arg:numbopt("depth", "The depth of stack", 0),
+                OUTPUT = Arg:stropt("o", "Redirect output to file", "a.txt"),
+                OPTIMIZATION = Arg:enumopt(
                     "O", "Optimization level",
                     "2", {"0", "1", "2", "3"}
                 ),

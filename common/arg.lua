@@ -1,5 +1,5 @@
 local Util = require("common/util")
-ARG = {
+local Arg = {
     name = nil,
     desc = nil,
     prefix = nil,
@@ -9,7 +9,7 @@ ARG = {
     PARAM = nil,
     UNMATCHED = nil,
 }
-OPTION = {
+local OPTION = {
     name = nil,
     desc = nil,
     typ = nil,
@@ -18,9 +18,9 @@ OPTION = {
 }
 
 
-function ARG:new(name, desc, prefix, config, schemas)
-    ARG.__index = ARG
-    self = setmetatable({}, ARG)
+function Arg:new(name, desc, prefix, config, schemas)
+    Arg.__index = Arg
+    self = setmetatable({}, Arg)
     self.name = name or "Unknown"
     self.desc = desc or "no description available"
     self.prefix = prefix or "-"
@@ -33,7 +33,7 @@ function ARG:new(name, desc, prefix, config, schemas)
 end
 
 
-function ARG:parse(cmdarg)
+function Arg:parse(cmdarg)
     if type(cmdarg) ~= "table" then
         Util:panic("Not valid cmdarg")
     end
@@ -97,7 +97,7 @@ function ARG:parse(cmdarg)
 end
 
 
-function ARG:tostring()
+function Arg:tostring()
     local msg = {
         string.format("%s -- %s", self.name, self.desc),
         string.format("Usage: %s [options] %s [%s]",
@@ -134,22 +134,22 @@ function ARG:tostring()
 end
 
 
-function ARG:boolopt(name, desc)
+function Arg:boolopt(name, desc)
     return OPTION:new(name, desc, "boolean", false, nil)
 end
 
 
-function ARG:numbopt(name, desc, defaultNumb)
+function Arg:numbopt(name, desc, defaultNumb)
     return OPTION:new(name, desc, "number", defaultNumb, nil)
 end
 
 
-function ARG:stropt(name, desc, defaultStr)
+function Arg:stropt(name, desc, defaultStr)
     return OPTION:new(name, desc, "string", defaultStr, nil)
 end
 
 
-function ARG:enumopt(name, desc, defaultValue, enumValues)
+function Arg:enumopt(name, desc, defaultValue, enumValues)
     return OPTION:new(name, desc, "enum", defaultValue, enumValues)
 end
 
@@ -184,3 +184,5 @@ function OPTION:isValidEnumVal(a)
     end
     return false
 end
+
+return Arg
