@@ -1,4 +1,4 @@
-Prototype = {
+local Prototype = {
     Source = nil,
     LineDefined = nil,
     LastLineDefined = nil,
@@ -15,7 +15,12 @@ Prototype = {
 }
 
 
-function Prototype:new(source, lineDefined, lastLineDefined, numParams, isVararg, maxStackSize, code, constants, upvalues, protos, lineInfo, locVars, upvalueNames)
+function Prototype:new(
+    source, lineDefined, lastLineDefined,
+    numParams, isVararg, maxStackSize,
+    code, constants, upvalues, protos,
+    lineInfo, locVars, upvalueNames
+)
     Prototype.__index = Prototype
     self = setmetatable({}, Prototype)
     self.Source = source
@@ -34,3 +39,4 @@ function Prototype:new(source, lineDefined, lastLineDefined, numParams, isVararg
     return self
 end
 
+return Prototype
