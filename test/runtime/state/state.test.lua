@@ -3,14 +3,14 @@ require("test/lest")
 
 SCENARIO("Testing runtime/state/state basic function", function ()
 
-    GIVEN("", function ()
+    GIVEN("a new LuaState", function ()
         local state = nil
 
         SETUP(function ()
             state = LuaState:new(20)
         end)
 
-        IT_SHOULD("return an empty lua state", function ()
+        IT_SHOULD("return an empty lua state correctly", function ()
             EXPECT(state:GetTop()).TOEQUAL(0)
         end)
 
