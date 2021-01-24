@@ -3,7 +3,7 @@ local Util = require("common/util")
 
 
 function SCENARIO(name, body)
-    __LEST_HANDLE_SCOPE__(Color:blue("Scenario"), name, body)
+    __LEST_HANDLE_SCOPE__(Color:blue("SCENARIO"), name, body)
 end
 
 
