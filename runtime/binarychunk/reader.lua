@@ -187,11 +187,10 @@ function Reader:readLocVars()
     local locVarNum = self:readUint32()
     local locVars = {}
     for i = 1, locVarNum do
-        locVars[i] = LocVar:new({
-            VarName = self:readString(),
-            StartPC = self:readUint32(),
-            EndPC   = self:readUint32(),
-        })
+        local varname = self:readString()
+        local startPC = self:readUint32()
+        local endPC = self:readUint32()
+        locVars[i] = LocVar:new(varname, startPC, endPC)
     end
     return locVars
 end

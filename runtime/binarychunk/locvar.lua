@@ -5,13 +5,12 @@ LocVar = {
 }
 
 
-function LocVar:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    self.VarName = o.VarName or ""
-    self.StartPC = o.StartPC or 0
-    self.EndPC = o.EndPC or 0
-    return o
+function LocVar:new(varname, startPC, endPC)
+    LocVar.__index = LocVar
+    self = setmetatable({}, LocVar)
+    self.VarName = varname or ""
+    self.StartPC = startPC or 0
+    self.EndPC = endPC or 0
+    return self
 end
 
