@@ -1,4 +1,4 @@
-Convert = {}
+local Convert = {}
 
 --
 -- Part1: any2x
@@ -87,3 +87,5 @@ function Convert:str2float(str)
     return result, result ~= nil
 end
 
+
+return Convert
