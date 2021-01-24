@@ -1,5 +1,5 @@
 local BinaryChunk = require("runtime/binarychunk/binarychunk")
-require("runtime/vm/instruction")
+local Instruction = require("runtime/vm/instruction")
 local Util = require("common/util")
 
 

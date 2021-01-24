@@ -1,6 +1,6 @@
 require("runtime/vm/opcodes")
 
-Instruction = {
+local Instruction = {
     value = nil,
 }
 
@@ -82,3 +82,5 @@ function Instruction:CMode()
     return Opcodes[self:Opcode() + 1].argCMode
 end
 
+
+return Instruction
