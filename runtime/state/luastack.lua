@@ -1,6 +1,6 @@
 local Util = require("common/util")
 
-LuaStack = {
+local LuaStack = {
     slots = nil,
     size = nil,     -- The number of elements that slots holding
     capacity = nil, -- The number of elements that slots can hold
@@ -88,3 +88,5 @@ function LuaStack:reverse(i, j)
         j = j - 1
     end
 end
+
+return LuaStack
