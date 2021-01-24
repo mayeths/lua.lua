@@ -6,16 +6,16 @@ Opcode = {
     opMode   = nil,
     name     = nil,
 }
-Opcode.__index = Opcode
 
 function Opcode:new(testFlag, setAFlag, argBMode, argCMode, opMode, name)
+    Opcode.__index = Opcode
     self = setmetatable({}, Opcode)
-    self.testFlag = testFlag or 0
-    self.setAFlag = setAFlag or 0
-    self.argBMode = argBMode or 0
-    self.argCMode = argCMode or 0
-    self.opMode = opMode or 0
-    self.name = name or ""
+    self.testFlag = testFlag
+    self.setAFlag = setAFlag
+    self.argBMode = argBMode
+    self.argCMode = argCMode
+    self.opMode = opMode
+    self.name = name
     return self
 end
 
