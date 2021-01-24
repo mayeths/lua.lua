@@ -157,8 +157,8 @@ end
 function OPTION:new(name, desc, typ, defaultValue, enumValues)
     OPTION.__index = OPTION
     self = setmetatable({}, OPTION)
-    self.name = name or "unkownopt"
-    self.desc = desc or "no description available"
+    self.name = name
+    self.desc = desc
     self.typ = typ
     if typ == "string" and type(defaultValue) ~= "string" then
         Util:panic("Not a valid default string value")
