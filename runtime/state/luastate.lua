@@ -1,5 +1,5 @@
 local LuaStack = require("runtime/state/luastack")
-require("runtime/state/luatype")
+local LuaType = require("runtime/state/luatype")
 local Util = require("common/util")
 
 local LuaState = {

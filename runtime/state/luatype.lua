@@ -1,4 +1,4 @@
-LuaType = {
+local LuaType = {
     -- https://github.com/lua/lua/blob/master/lua.h#L60
     LUA_TNIL = 0,
     LUA_TBOOLEAN = 1,
@@ -12,3 +12,4 @@ LuaType = {
     LUA_TNONE = -1,
 }
 
+return LuaType
