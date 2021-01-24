@@ -1,5 +1,5 @@
 require("common/color")
-require("common/util")
+local Util = require("common/util")
 
 
 function SCENARIO(name, body)

@@ -1,4 +1,4 @@
-require("common/util")
+local Util = require("common/util")
 ARG = {
     name = nil,
     desc = nil,

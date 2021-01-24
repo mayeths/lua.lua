@@ -1,4 +1,4 @@
-require("common/util")
+local Util = require("common/util")
 
 
 function LuaState:TypeName(tid)

@@ -1,6 +1,6 @@
 require("runtime/state/state")
 require("runtime/state/luaoperation")
-require("common/util")
+local Util = require("common/util")
 
 
 LLUA = {}

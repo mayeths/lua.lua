@@ -1,4 +1,4 @@
-require("common/util")
+local Util = require("common/util")
 require("common/arg")
 LLUAR = {
     NAME = "Lua.lua runtime",

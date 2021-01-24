@@ -3,7 +3,7 @@ require("runtime/binarychunk/prototype")
 require("runtime/binarychunk/tag")
 require("runtime/binarychunk/locvar")
 require("runtime/binarychunk/upvalue")
-require("common/util")
+local Util = require("common/util")
 
 
 Reader = {
