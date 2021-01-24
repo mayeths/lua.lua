@@ -4,12 +4,11 @@ Upvalue = {
 }
 
 
-function Upvalue:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    self.Instack = o.Instack or 0
-    self.Idx = o.Idx or 0
-    return o
+function Upvalue:new(instack, idx)
+    Upvalue.__index = Upvalue
+    self = setmetatable({}, Upvalue)
+    self.Instack = instack or 0
+    self.Idx = idx or 0
+    return self
 end
 

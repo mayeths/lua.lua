@@ -165,10 +165,10 @@ function Reader:readUpvalues()
     local upvalNum = self:readUint32()
     local upvalues = {}
     for i = 1, upvalNum do
-        upvalues[i] = Upvalue:new({
-            Instack = self:readByte(),
-            Idx     = self:readByte(),
-        })
+        upvalues[i] = Upvalue:new(
+            self:readByte(),
+            self:readByte()
+        )
     end
     return upvalues
 end
