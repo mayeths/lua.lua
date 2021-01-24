@@ -16,4 +16,8 @@ function Color:blue(str)
     return self.BLUE..str..self.NC
 end
 
+function Color:green(str)
+    return self.GREEN..str..self.NC
+end
+
 return Color
