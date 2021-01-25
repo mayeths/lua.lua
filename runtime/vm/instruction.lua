@@ -1,4 +1,5 @@
 local Opcodes = require("runtime/vm/opcodes")
+local Util = require("common/util")
 
 local Instruction = {
     value = nil,
@@ -76,6 +77,16 @@ end
 
 function Instruction:CMode()
     return Opcodes[self:Opcode() + 1].argCMode
+end
+
+
+function Instruction:Execute(vm)
+    local action = Opcodes[self:Opcode() + 1].action
+    if action ~= nil then
+        action(self, vm)
+    else
+        Util:panic(self:OpName().." is not implemented.")
+    end
 end
 
 
