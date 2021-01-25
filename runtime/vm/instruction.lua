@@ -2,6 +2,8 @@ local Opcodes = require("runtime/vm/opcodes")
 
 local Instruction = {
     value = nil,
+    MAXARG_Bx = (1 << 18) - 1,         -- 262143
+    MAXARG_sBx = ((1 << 18) - 1) >> 1, -- 131071
 }
 
 --[[
@@ -17,12 +19,6 @@ local Instruction = {
   +-------+^------+-^-----+-^-----
  31      23      15       7      0
 ]]
-
-MAXARG_Bx = (1 << 18) - 1   -- 262143
-MAXARG_sBx = MAXARG_Bx >> 1 -- 131071
-Instruction.MAXARG_Bx = MAXARG_Bx
-Instruction.MAXARG_sBx = MAXARG_sBx
-
 
 function Instruction:new(value)
     Instruction.__index = Instruction
@@ -54,7 +50,7 @@ end
 
 function Instruction:AsBx()
     local a, bx = self:ABx()
-    return a, bx - MAXARG_sBx
+    return a, bx - Instruction.MAXARG_sBx
 end
 
 
