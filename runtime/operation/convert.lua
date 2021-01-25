@@ -5,14 +5,7 @@ local Convert = {}
 --
 
 function Convert:any2boolean(val)
-    local t = type(val)
-    if t == "nil" then
-        return false
-    elseif t == "boolean" then
-        return val
-    else
-        return true
-    end
+    return not not val
 end
 
 
