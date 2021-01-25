@@ -23,7 +23,11 @@ function LuaState:printStack()
         if t == LuaType.LUA_TBOOLEAN then
             Util:printf("[%s]", tostring(self:ToBoolean(i)))
         elseif t == LuaType.LUA_TNUMBER then
-            Util:printf("[%s]", tostring(self:ToNumber(i)))
+            if self:IsInteger(i) then
+                Util:printf("[%s]", tostring(self:ToInteger(i)))
+            else
+                Util:printf("[%s]", tostring(self:ToNumber(i)))
+            end
         elseif t == LuaType.LUA_TNIL then
             Util:printf("[%s]", "nil")
         elseif t == LuaType.LUA_TSTRING then
