@@ -75,13 +75,13 @@ function LuaState:SetTop(idx)
     if newTop < 0 then
         Util:panic("[LuaState:SetTop ERROR] Stack underflow!")
     end
-    local operateSlotNum = self:GetTop() - newTop
-    if operateSlotNum > 0 then
-        for _ = 1, operateSlotNum do
+    local operateSlotNum = newTop - self:GetTop()
+    if operateSlotNum < 0 then
+        for _ = 1, -operateSlotNum do
             self.stack:pop()
         end
-    elseif operateSlotNum < 0 then
-        for _ = 1, -operateSlotNum do
+    elseif operateSlotNum > 0 then
+        for _ = 1, operateSlotNum do
             self.stack:push(nil)
         end
     end
