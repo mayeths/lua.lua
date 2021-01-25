@@ -5,5 +5,6 @@ require("runtime/state/APIOperateValue")
 require("runtime/state/APIPushValue")
 require("runtime/state/APIValueType")
 require("runtime/state/APIVM")
+require("runtime/state/APITable")
 
 return require("runtime/state/luastate")

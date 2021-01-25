@@ -36,6 +36,8 @@ function LuaState:printStack()
             Util:printf("[%s]", "nil")
         elseif t == LuaType.LUA_TSTRING then
             Util:printf('["%s"]', self:ToString(i))
+        else
+            Util:printf("[%s]", self:TypeName(t))
         end
     end
     Util:println("")

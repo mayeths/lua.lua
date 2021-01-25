@@ -40,6 +40,8 @@ function LuaState:Type(idx)
         return LuaType.LUA_TNUMBER
     elseif valtype == "string" then
         return LuaType.LUA_TSTRING
+    elseif valtype == "table" then
+        return LuaType.LUA_TTABLE
     else
         Util:panic("[LuaState:Type ERROR] Unknown type!")
     end

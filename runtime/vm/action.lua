@@ -138,6 +138,47 @@ function Action.concat(inst, vm)
     vm:Replace(a)
 end
 
+function Action.newTable(inst, vm)
+    local a, b, c = inst:ABC()
+    a = a + 1
+    vm:CreateTable(Action._fb2int(b), Action._fb2int(c))
+    vm:Replace(a)
+end
+
+function Action.getTable(inst, vm)
+    local a, b, c = inst:ABC()
+    a = a + 1
+    b = b + 1
+    vm:GetRK(c)
+    vm:GetTable(b)
+    vm:Replace(a)
+end
+
+function Action.setTable(inst, vm)
+    local a, b, c = inst:ABC()
+    a = a + 1
+    vm:GetRK(b)
+    vm:GetRK(c)
+    vm:SetTable(a)
+end
+
+function Action.setList(inst, vm)
+    local a, b, c = inst:ABC()
+    a = a + 1
+    if c > 0 then
+        c = c - 1
+    else
+        c = (vm:Fetch() >> 6)
+    end
+    vm:CheckStack(1)
+    local idx = c * 50
+    for i = 1, b do
+        idx = idx + 1
+        vm:PushValue(a + i)
+        vm:SetI(a, idx)
+    end
+end
+
 function Action.add(inst, vm)
     Action._binaryArith(inst, vm, LuaOperation.LUA_OPADD)
 end
@@ -235,5 +276,12 @@ function Action._compare(inst, vm, op)
     vm:Pop(2)
 end
 
+function Action._fb2int(x)
+    if x < 8 then
+        return x
+    else
+        return ((x & 7) + 8) << ((x >> 3) - 1)
+    end
+end
 
 return Action
