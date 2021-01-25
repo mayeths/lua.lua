@@ -4,14 +4,18 @@ local Util = require("common/util")
 
 local LuaState = {
     stack = nil,
+    proto = nil,
+    pc = nil,
 }
 
 
-function LuaState:new(capacity)
+function LuaState:new(capacity, proto)
     LuaState.__index = LuaState
     self = setmetatable({}, LuaState)
     self.__index = self
-    self.stack = LuaStack:new(20)
+    self.stack = LuaStack:new(capacity)
+    self.proto = proto
+    self.pc = 1
     return self
 end
 
