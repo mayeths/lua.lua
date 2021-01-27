@@ -5,7 +5,7 @@ local Util = require("common/util")
 local Action = {}
 
 
-function Action.loadNil(inst, vm)
+function Action.LoadNil(inst, vm)
     local a, b, _ = inst:ABC()
     a = a + 1
     vm:PushNil()
@@ -15,7 +15,7 @@ function Action.loadNil(inst, vm)
     vm:Pop(1)
 end
 
-function Action.loadBool(inst, vm)
+function Action.LoadBool(inst, vm)
     local a, b, c = inst:ABC()
     a = a + 1
     vm:PushBoolean(b ~= 0)
@@ -25,14 +25,14 @@ function Action.loadBool(inst, vm)
     end
 end
 
-function Action.loadK(inst, vm)
+function Action.LoadK(inst, vm)
     local a, bx = inst:ABx()
     a = a + 1
     vm:GetConst(bx)
     vm:Replace(a)
 end
 
-function Action.loadKx(inst, vm)
+function Action.LoadKx(inst, vm)
     local a, _ = inst:ABx()
     a = a + 1
     local ax = vm:Fetch() >> 6
@@ -40,7 +40,7 @@ function Action.loadKx(inst, vm)
     vm:Replace(a)
 end
 
-function Action.forPrep(inst, vm)
+function Action.ForPrep(inst, vm)
     local a, sBx = inst:AsBx()
     a = a + 1
     if vm:Type(a) == Type.LUA_TSTRING then
@@ -62,7 +62,7 @@ function Action.forPrep(inst, vm)
     vm:AddPC(sBx)
 end
 
-function Action.forLoop(inst, vm)
+function Action.ForLoop(inst, vm)
     local a, sBx = inst:AsBx()
     a = a + 1
     vm:PushValue(a + 2)
@@ -76,12 +76,12 @@ function Action.forLoop(inst, vm)
     end
 end
 
-function Action.move(inst, vm)
+function Action.Move(inst, vm)
     local a, b, _ = inst:ABC()
     vm:Copy(b + 1, a + 1)
 end
 
-function Action.jmp(inst, vm)
+function Action.Jmp(inst, vm)
     local a, sBx = inst:AsBx()
     vm:AddPC(sBx)
     if a ~= 0 then
@@ -89,7 +89,7 @@ function Action.jmp(inst, vm)
     end
 end
 
-function Action.no(inst, vm)
+function Action.No(inst, vm)
     local a, b, _ = inst:ABC()
     a = a + 1
     b = b + 1
@@ -97,7 +97,7 @@ function Action.no(inst, vm)
     vm:Replace(a)
 end
 
-function Action.test(inst, vm)
+function Action.Test(inst, vm)
     local a, _, c = inst:ABC()
     a = a + 1
     if vm:ToBoolean(a) ~= (c ~= 0) then
@@ -105,7 +105,7 @@ function Action.test(inst, vm)
     end
 end
 
-function Action.testSet(inst, vm)
+function Action.TestSet(inst, vm)
     local a, b, c = inst:ABC()
     a = a + 1
     b = b + 1
@@ -116,7 +116,7 @@ function Action.testSet(inst, vm)
     end
 end
 
-function Action.length(inst, vm)
+function Action.Length(inst, vm)
     local a, b, _ = inst:ABC()
     a = a + 1
     b = b + 1
@@ -124,7 +124,7 @@ function Action.length(inst, vm)
     vm:Replace(a)
 end
 
-function Action.concat(inst, vm)
+function Action.Concat(inst, vm)
     local a, b, c = inst:ABC()
     a = a + 1
     b = b + 1
@@ -138,14 +138,14 @@ function Action.concat(inst, vm)
     vm:Replace(a)
 end
 
-function Action.newTable(inst, vm)
+function Action.NewTable(inst, vm)
     local a, b, c = inst:ABC()
     a = a + 1
     vm:CreateTable(Action._fb2int(b), Action._fb2int(c))
     vm:Replace(a)
 end
 
-function Action.getTable(inst, vm)
+function Action.GetTable(inst, vm)
     local a, b, c = inst:ABC()
     a = a + 1
     b = b + 1
@@ -154,7 +154,7 @@ function Action.getTable(inst, vm)
     vm:Replace(a)
 end
 
-function Action.setTable(inst, vm)
+function Action.SetTable(inst, vm)
     local a, b, c = inst:ABC()
     a = a + 1
     vm:GetRK(b)
@@ -162,7 +162,7 @@ function Action.setTable(inst, vm)
     vm:SetTable(a)
 end
 
-function Action.setList(inst, vm)
+function Action.SetList(inst, vm)
     local a, b, c = inst:ABC()
     a = a + 1
     if c > 0 then
@@ -192,7 +192,7 @@ function Action.setList(inst, vm)
     end
 end
 
-function Action.self(inst, vm)
+function Action.Self(inst, vm)
     local a, b, c = inst:ABC()
     a = a + 1
     b = b + 1
@@ -202,14 +202,14 @@ function Action.self(inst, vm)
     vm:Replace(a)
 end
 
-function Action.closure(inst, vm)
+function Action.Closure(inst, vm)
     local a, bx = inst:ABx()
     a = a + 1
     vm:LoadProto(bx + 1)
     vm:Replace(a)
 end
 
-function Action.vararg(inst, vm)
+function Action.Vararg(inst, vm)
     local a, b, _ = inst:ABC()
     a = a + 1
     if b ~= 1 then
@@ -218,7 +218,7 @@ function Action.vararg(inst, vm)
     end
 end
 
-function Action.tailCall(inst, vm)
+function Action.TailCall(inst, vm)
     local a, b, _ = inst:ABC()
     a = a + 1
     local c = 0
@@ -227,7 +227,7 @@ function Action.tailCall(inst, vm)
     Action._popResults(a, c, vm)
 end
 
-function Action.call(inst, vm)
+function Action.Call(inst, vm)
     local a, b, c = inst:ABC()
     a = a + 1
     local nargs = Action._pushFuncAndArgs(a, b, vm)
@@ -235,71 +235,71 @@ function Action.call(inst, vm)
     Action._popResults(a, c, vm)
 end
 
-function Action.add(inst, vm)
+function Action.Add(inst, vm)
     Action._binaryArith(inst, vm, Operation.LUA_OPADD)
 end
 
-function Action.sub(inst, vm)
+function Action.Sub(inst, vm)
     Action._binaryArith(inst, vm, Operation.LUA_OPSUB)
 end
 
-function Action.mul(inst, vm)
+function Action.Mul(inst, vm)
     Action._binaryArith(inst, vm, Operation.LUA_OPMUL)
 end
 
-function Action.mod(inst, vm)
+function Action.Mod(inst, vm)
     Action._binaryArith(inst, vm, Operation.LUA_OPMOD)
 end
 
-function Action.pow(inst, vm)
+function Action.Pow(inst, vm)
     Action._binaryArith(inst, vm, Operation.LUA_OPPOW)
 end
 
-function Action.div(inst, vm)
+function Action.Div(inst, vm)
     Action._binaryArith(inst, vm, Operation.LUA_OPDIV)
 end
 
-function Action.idiv(inst, vm)
+function Action.Idiv(inst, vm)
     Action._binaryArith(inst, vm, Operation.LUA_OPIDIV)
 end
 
-function Action.band(inst, vm)
+function Action.Band(inst, vm)
     Action._binaryArith(inst, vm, Operation.LUA_OPBAND)
 end
 
-function Action.bor(inst, vm)
+function Action.Bor(inst, vm)
     Action._binaryArith(inst, vm, Operation.LUA_OPBOR)
 end
 
-function Action.bxor(inst, vm)
+function Action.Bxor(inst, vm)
     Action._binaryArith(inst, vm, Operation.LUA_OPBXOR)
 end
 
-function Action.shl(inst, vm)
+function Action.Shl(inst, vm)
     Action._binaryArith(inst, vm, Operation.LUA_OPSHL)
 end
 
-function Action.shr(inst, vm)
+function Action.Shr(inst, vm)
     Action._binaryArith(inst, vm, Operation.LUA_OPSHR)
 end
 
-function Action.unm(inst, vm)
+function Action.Unm(inst, vm)
     Action._unaryArith(inst, vm, Operation.LUA_OPUNM)
 end
 
-function Action.bnot(inst, vm)
+function Action.Bnot(inst, vm)
     Action._unaryArith(inst, vm, Operation.LUA_OPBNOT)
 end
 
-function Action.eq(inst, vm)
+function Action.Eq(inst, vm)
     Action._compare(inst, vm, Operation.LUA_OPEQ)
 end
 
-function Action.lt(inst, vm)
+function Action.Lt(inst, vm)
     Action._compare(inst, vm, Operation.LUA_OPLT)
 end
 
-function Action.le(inst, vm)
+function Action.Le(inst, vm)
     Action._compare(inst, vm, Operation.LUA_OPLE)
 end
 
