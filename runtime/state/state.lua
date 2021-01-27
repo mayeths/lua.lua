@@ -1,4 +1,4 @@
-local Stack = require("runtime/state/stack")
+local Stack = require("runtime/stack/stack")
 local Closure = require("runtime/state/type/closure")
 local Table = require("runtime/state/type/table")
 local Chunk = require("runtime/chunk/chunk")
