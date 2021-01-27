@@ -5,331 +5,331 @@ local Util = require("common/util")
 local Action = {}
 
 
-function Action.LoadNil(inst, vm)
+function Action.LoadNil(inst, state)
     local a, b, _ = inst:ABC()
     a = a + 1
-    vm:PushNil()
+    state:PushNil()
     for i = a, a + b do
-        vm:Copy(-1, i)
+        state:Copy(-1, i)
     end
-    vm:Pop(1)
+    state:Pop(1)
 end
 
-function Action.LoadBool(inst, vm)
+function Action.LoadBool(inst, state)
     local a, b, c = inst:ABC()
     a = a + 1
-    vm:PushBoolean(b ~= 0)
-    vm:Replace(a)
+    state:PushBoolean(b ~= 0)
+    state:Replace(a)
     if c ~= 0 then
-        vm:AddPC(1)
+        state:AddPC(1)
     end
 end
 
-function Action.LoadK(inst, vm)
+function Action.LoadK(inst, state)
     local a, bx = inst:ABx()
     a = a + 1
-    vm:GetConst(bx)
-    vm:Replace(a)
+    state:GetConst(bx)
+    state:Replace(a)
 end
 
-function Action.LoadKx(inst, vm)
+function Action.LoadKx(inst, state)
     local a, _ = inst:ABx()
     a = a + 1
-    local ax = vm:Fetch() >> 6
-    vm:GetConst(ax)
-    vm:Replace(a)
+    local ax = state:Fetch() >> 6
+    state:GetConst(ax)
+    state:Replace(a)
 end
 
-function Action.ForPrep(inst, vm)
+function Action.ForPrep(inst, state)
     local a, sBx = inst:AsBx()
     a = a + 1
-    if vm:Type(a) == TYPE.LUA_TSTRING then
-        vm:PushNumber(vm:ToNumber(a))
-        vm:Replace(a)
+    if state:Type(a) == TYPE.LUA_TSTRING then
+        state:PushNumber(state:ToNumber(a))
+        state:Replace(a)
     end
-    if vm:Type(a + 1) == TYPE.LUA_TSTRING then
-        vm:PushNumber(vm:ToNumber(a + 1))
-        vm:Replace(a + 1)
+    if state:Type(a + 1) == TYPE.LUA_TSTRING then
+        state:PushNumber(state:ToNumber(a + 1))
+        state:Replace(a + 1)
     end
-    if vm:Type(a + 2) == TYPE.LUA_TSTRING then
-        vm:PushNumber(vm:ToNumber(a + 2))
-        vm:Replace(a + 2)
+    if state:Type(a + 2) == TYPE.LUA_TSTRING then
+        state:PushNumber(state:ToNumber(a + 2))
+        state:Replace(a + 2)
     end
-    vm:PushValue(a)
-    vm:PushValue(a + 2)
-    vm:Arith(OPERATION.LUA_OPSUB)
-    vm:Replace(a)
-    vm:AddPC(sBx)
+    state:PushValue(a)
+    state:PushValue(a + 2)
+    state:Arith(OPERATION.LUA_OPSUB)
+    state:Replace(a)
+    state:AddPC(sBx)
 end
 
-function Action.ForLoop(inst, vm)
+function Action.ForLoop(inst, state)
     local a, sBx = inst:AsBx()
     a = a + 1
-    vm:PushValue(a + 2)
-    vm:PushValue(a)
-    vm:Arith(OPERATION.LUA_OPADD)
-    vm:Replace(a)
-    local isPositiveStep = vm:ToNumber(a + 2) >= 0
-    if isPositiveStep and vm:Compare(a, a + 1, OPERATION.LUA_OPLE) or not isPositiveStep and vm:Compare(a + 1, a, OPERATION.LUA_OPLE) then
-        vm:AddPC(sBx)
-        vm:Copy(a, a + 3)
+    state:PushValue(a + 2)
+    state:PushValue(a)
+    state:Arith(OPERATION.LUA_OPADD)
+    state:Replace(a)
+    local isPositiveStep = state:ToNumber(a + 2) >= 0
+    if isPositiveStep and state:Compare(a, a + 1, OPERATION.LUA_OPLE) or not isPositiveStep and state:Compare(a + 1, a, OPERATION.LUA_OPLE) then
+        state:AddPC(sBx)
+        state:Copy(a, a + 3)
     end
 end
 
-function Action.Move(inst, vm)
+function Action.Move(inst, state)
     local a, b, _ = inst:ABC()
-    vm:Copy(b + 1, a + 1)
+    state:Copy(b + 1, a + 1)
 end
 
-function Action.Jmp(inst, vm)
+function Action.Jmp(inst, state)
     local a, sBx = inst:AsBx()
-    vm:AddPC(sBx)
+    state:AddPC(sBx)
     if a ~= 0 then
         Util:panic("todo: jmp!")
     end
 end
 
-function Action.No(inst, vm)
+function Action.No(inst, state)
     local a, b, _ = inst:ABC()
     a = a + 1
     b = b + 1
-    vm:PushBoolean(not vm:ToBoolean(b))
-    vm:Replace(a)
+    state:PushBoolean(not state:ToBoolean(b))
+    state:Replace(a)
 end
 
-function Action.Test(inst, vm)
+function Action.Test(inst, state)
     local a, _, c = inst:ABC()
     a = a + 1
-    if vm:ToBoolean(a) ~= (c ~= 0) then
-        vm:AddPC(1)
+    if state:ToBoolean(a) ~= (c ~= 0) then
+        state:AddPC(1)
     end
 end
 
-function Action.TestSet(inst, vm)
+function Action.TestSet(inst, state)
     local a, b, c = inst:ABC()
     a = a + 1
     b = b + 1
-    if vm:ToBoolean(b) == (c ~= 0) then
-        vm:Copy(b, a)
+    if state:ToBoolean(b) == (c ~= 0) then
+        state:Copy(b, a)
     else
-        vm:AddPC(1)
+        state:AddPC(1)
     end
 end
 
-function Action.Length(inst, vm)
+function Action.Length(inst, state)
     local a, b, _ = inst:ABC()
     a = a + 1
     b = b + 1
-    vm:Len(b)
-    vm:Replace(a)
+    state:Len(b)
+    state:Replace(a)
 end
 
-function Action.Concat(inst, vm)
+function Action.Concat(inst, state)
     local a, b, c = inst:ABC()
     a = a + 1
     b = b + 1
     c = c + 1
     local n = c - b + 1
-    vm:CheckStack(n)
+    state:CheckStack(n)
     for i = b, c do
-        vm:PushValue(i)
+        state:PushValue(i)
     end
-    vm:Concat(n)
-    vm:Replace(a)
+    state:Concat(n)
+    state:Replace(a)
 end
 
-function Action.NewTable(inst, vm)
+function Action.NewTable(inst, state)
     local a, b, c = inst:ABC()
     a = a + 1
-    vm:CreateTable(Action._fb2int(b), Action._fb2int(c))
-    vm:Replace(a)
+    state:CreateTable(Action._fb2int(b), Action._fb2int(c))
+    state:Replace(a)
 end
 
-function Action.GetTable(inst, vm)
+function Action.GetTable(inst, state)
     local a, b, c = inst:ABC()
     a = a + 1
     b = b + 1
-    vm:GetRK(c)
-    vm:GetTable(b)
-    vm:Replace(a)
+    state:GetRK(c)
+    state:GetTable(b)
+    state:Replace(a)
 end
 
-function Action.SetTable(inst, vm)
+function Action.SetTable(inst, state)
     local a, b, c = inst:ABC()
     a = a + 1
-    vm:GetRK(b)
-    vm:GetRK(c)
-    vm:SetTable(a)
+    state:GetRK(b)
+    state:GetRK(c)
+    state:SetTable(a)
 end
 
-function Action.SetList(inst, vm)
+function Action.SetList(inst, state)
     local a, b, c = inst:ABC()
     a = a + 1
     if c > 0 then
         c = c - 1
     else
-        c = (vm:Fetch() >> 6)
+        c = (state:Fetch() >> 6)
     end
     local b0 = b == 0
     if b0 then
-        b = vm:ToInteger(-1) - a - 1
-        vm:Pop(1)
+        b = state:ToInteger(-1) - a - 1
+        state:Pop(1)
     end
-    vm:CheckStack(1)
+    state:CheckStack(1)
     local idx = c * 50
     for i = 1, b do
         idx = idx + 1
-        vm:PushValue(a + i)
-        vm:SetI(a, idx)
+        state:PushValue(a + i)
+        state:SetI(a, idx)
     end
     if b0 then
-        for i = vm:RegisterCount() + 1, vm:GetTop() do
+        for i = state:RegisterCount() + 1, state:GetTop() do
             idx = idx + 1
-            vm:PushValue(i)
-            vm:SetI(a, idx)
+            state:PushValue(i)
+            state:SetI(a, idx)
         end
-        vm:SetTop(vm:RegisterCount())
+        state:SetTop(state:RegisterCount())
     end
 end
 
-function Action.Self(inst, vm)
+function Action.Self(inst, state)
     local a, b, c = inst:ABC()
     a = a + 1
     b = b + 1
-    vm:Copy(b, a + 1)
-    vm:GetRK(c)
-    vm:GetTable(b)
-    vm:Replace(a)
+    state:Copy(b, a + 1)
+    state:GetRK(c)
+    state:GetTable(b)
+    state:Replace(a)
 end
 
-function Action.Closure(inst, vm)
+function Action.Closure(inst, state)
     local a, bx = inst:ABx()
     a = a + 1
-    vm:LoadProto(bx + 1)
-    vm:Replace(a)
+    state:LoadProto(bx + 1)
+    state:Replace(a)
 end
 
-function Action.Vararg(inst, vm)
+function Action.Vararg(inst, state)
     local a, b, _ = inst:ABC()
     a = a + 1
     if b ~= 1 then
-        vm:LoadVararg(b - 1)
-        Action._popResults(a, b, vm)
+        state:LoadVararg(b - 1)
+        Action._popResults(a, b, state)
     end
 end
 
-function Action.TailCall(inst, vm)
+function Action.TailCall(inst, state)
     local a, b, _ = inst:ABC()
     a = a + 1
     local c = 0
-    local nargs = Action._pushFuncAndArgs(a, b, vm)
-    vm:Call(nargs, c - 1)
-    Action._popResults(a, c, vm)
+    local nargs = Action._pushFuncAndArgs(a, b, state)
+    state:Call(nargs, c - 1)
+    Action._popResults(a, c, state)
 end
 
-function Action.Call(inst, vm)
+function Action.Call(inst, state)
     local a, b, c = inst:ABC()
     a = a + 1
-    local nargs = Action._pushFuncAndArgs(a, b, vm)
-    vm:Call(nargs, c - 1)
-    Action._popResults(a, c, vm)
+    local nargs = Action._pushFuncAndArgs(a, b, state)
+    state:Call(nargs, c - 1)
+    Action._popResults(a, c, state)
 end
 
-function Action.Add(inst, vm)
-    Action._binaryArith(inst, vm, OPERATION.LUA_OPADD)
+function Action.Add(inst, state)
+    Action._binaryArith(inst, state, OPERATION.LUA_OPADD)
 end
 
-function Action.Sub(inst, vm)
-    Action._binaryArith(inst, vm, OPERATION.LUA_OPSUB)
+function Action.Sub(inst, state)
+    Action._binaryArith(inst, state, OPERATION.LUA_OPSUB)
 end
 
-function Action.Mul(inst, vm)
-    Action._binaryArith(inst, vm, OPERATION.LUA_OPMUL)
+function Action.Mul(inst, state)
+    Action._binaryArith(inst, state, OPERATION.LUA_OPMUL)
 end
 
-function Action.Mod(inst, vm)
-    Action._binaryArith(inst, vm, OPERATION.LUA_OPMOD)
+function Action.Mod(inst, state)
+    Action._binaryArith(inst, state, OPERATION.LUA_OPMOD)
 end
 
-function Action.Pow(inst, vm)
-    Action._binaryArith(inst, vm, OPERATION.LUA_OPPOW)
+function Action.Pow(inst, state)
+    Action._binaryArith(inst, state, OPERATION.LUA_OPPOW)
 end
 
-function Action.Div(inst, vm)
-    Action._binaryArith(inst, vm, OPERATION.LUA_OPDIV)
+function Action.Div(inst, state)
+    Action._binaryArith(inst, state, OPERATION.LUA_OPDIV)
 end
 
-function Action.Idiv(inst, vm)
-    Action._binaryArith(inst, vm, OPERATION.LUA_OPIDIV)
+function Action.Idiv(inst, state)
+    Action._binaryArith(inst, state, OPERATION.LUA_OPIDIV)
 end
 
-function Action.Band(inst, vm)
-    Action._binaryArith(inst, vm, OPERATION.LUA_OPBAND)
+function Action.Band(inst, state)
+    Action._binaryArith(inst, state, OPERATION.LUA_OPBAND)
 end
 
-function Action.Bor(inst, vm)
-    Action._binaryArith(inst, vm, OPERATION.LUA_OPBOR)
+function Action.Bor(inst, state)
+    Action._binaryArith(inst, state, OPERATION.LUA_OPBOR)
 end
 
-function Action.Bxor(inst, vm)
-    Action._binaryArith(inst, vm, OPERATION.LUA_OPBXOR)
+function Action.Bxor(inst, state)
+    Action._binaryArith(inst, state, OPERATION.LUA_OPBXOR)
 end
 
-function Action.Shl(inst, vm)
-    Action._binaryArith(inst, vm, OPERATION.LUA_OPSHL)
+function Action.Shl(inst, state)
+    Action._binaryArith(inst, state, OPERATION.LUA_OPSHL)
 end
 
-function Action.Shr(inst, vm)
-    Action._binaryArith(inst, vm, OPERATION.LUA_OPSHR)
+function Action.Shr(inst, state)
+    Action._binaryArith(inst, state, OPERATION.LUA_OPSHR)
 end
 
-function Action.Unm(inst, vm)
-    Action._unaryArith(inst, vm, OPERATION.LUA_OPUNM)
+function Action.Unm(inst, state)
+    Action._unaryArith(inst, state, OPERATION.LUA_OPUNM)
 end
 
-function Action.Bnot(inst, vm)
-    Action._unaryArith(inst, vm, OPERATION.LUA_OPBNOT)
+function Action.Bnot(inst, state)
+    Action._unaryArith(inst, state, OPERATION.LUA_OPBNOT)
 end
 
-function Action.Eq(inst, vm)
-    Action._compare(inst, vm, OPERATION.LUA_OPEQ)
+function Action.Eq(inst, state)
+    Action._compare(inst, state, OPERATION.LUA_OPEQ)
 end
 
-function Action.Lt(inst, vm)
-    Action._compare(inst, vm, OPERATION.LUA_OPLT)
+function Action.Lt(inst, state)
+    Action._compare(inst, state, OPERATION.LUA_OPLT)
 end
 
-function Action.Le(inst, vm)
-    Action._compare(inst, vm, OPERATION.LUA_OPLE)
+function Action.Le(inst, state)
+    Action._compare(inst, state, OPERATION.LUA_OPLE)
 end
 
 
-function Action._binaryArith(inst, vm, op)
+function Action._binaryArith(inst, state, op)
     local a, b, c = inst:ABC()
     a = a + 1
-    vm:GetRK(b)
-    vm:GetRK(c)
-    vm:Arith(op)
-    vm:Replace(a)
+    state:GetRK(b)
+    state:GetRK(c)
+    state:Arith(op)
+    state:Replace(a)
 end
 
-function Action._unaryArith(inst, vm, op)
+function Action._unaryArith(inst, state, op)
     local a, b, _ = inst:ABC()
     a = a + 1
     b = b + 1
-    vm:PushValue(b)
-    vm:Arith(op)
-    vm:Replace(a)
+    state:PushValue(b)
+    state:Arith(op)
+    state:Replace(a)
 end
 
-function Action._compare(inst, vm, op)
+function Action._compare(inst, state, op)
     local a, b, c = inst:ABC()
-    vm:GetRK(b)
-    vm:GetRK(c)
-    if vm:Compare(-2, -1, op) ~= (a ~= 0) then
-        vm:AddPC(1)
+    state:GetRK(b)
+    state:GetRK(c)
+    if state:Compare(-2, -1, op) ~= (a ~= 0) then
+        state:AddPC(1)
     end
-    vm:Pop(2)
+    state:Pop(2)
 end
 
 function Action._fb2int(x)
@@ -340,54 +340,54 @@ function Action._fb2int(x)
     end
 end
 
-function Action._pushFuncAndArgs(a, b, vm)
+function Action._pushFuncAndArgs(a, b, state)
     if b > 1 then
-        vm:CheckStack(b)
+        state:CheckStack(b)
         for i = a, a + b - 1 do
-            vm:PushValue(i)
+            state:PushValue(i)
         end
         return b - 1
     else
-        Action._fixStack(a, vm)
-        return vm:GetTop() - vm:RegisterCount() - 1
+        Action._fixStack(a, state)
+        return state:GetTop() - state:RegisterCount() - 1
     end
 end
 
-function Action._fixStack(a, vm)
-    local x = vm:ToInteger(-1)
-    vm:Pop(1)
-    vm:CheckStack(x - a)
+function Action._fixStack(a, state)
+    local x = state:ToInteger(-1)
+    state:Pop(1)
+    state:CheckStack(x - a)
     for i = a, x - 1 do
-        vm:PushValue(i)
+        state:PushValue(i)
     end
-    vm:Rotate(vm:RegisterCount() + 1, x - a)
+    state:Rotate(state:RegisterCount() + 1, x - a)
 end
 
-function Action._popResults(a, c, vm)
+function Action._popResults(a, c, state)
     if c == 1 then
         --
     elseif c > 1 then
         for i = a + c - 2, a, -1 do
-            vm:Replace(i)
+            state:Replace(i)
         end
     else
-        vm:CheckStack(1)
-        vm:PushInteger(a)
+        state:CheckStack(1)
+        state:PushInteger(a)
     end
 end
 
-function Action._return(inst, vm)
+function Action._return(inst, state)
     local a, b, _ = inst:ABC()
     a = a + 1
     if b == 1 then
         --
     elseif b > 1 then
-        vm:CheckStack(b - 1)
+        state:CheckStack(b - 1)
         for i = a, a + b - 2 do
-            vm:PushValue(i)
+            state:PushValue(i)
         end
     else
-        Action._fixStack(a, vm)
+        Action._fixStack(a, state)
     end
 end
 
