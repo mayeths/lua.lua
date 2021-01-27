@@ -1,5 +1,5 @@
 local State = require("runtime/state/state")
-require("test/lest")
+require("unittest/lest")
 
 SCENARIO("Testing runtime/state/state basic function", function ()
 

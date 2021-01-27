@@ -1,5 +1,5 @@
 local Arg = require("common/arg")
-require("test/lest")
+require("unittest/lest")
 
 SCENARIO("Testing common/arg basic function", function ()
 
