@@ -134,7 +134,11 @@ end
 
 function LuaState:Len(idx)
     local val = self.stack:get(idx)
-    self.stack:push(#val)
+    if type(val) == "table" then
+        self.stack:push(#val.table)
+    else
+        self.stack:push(#val)
+    end
 end
 
 
