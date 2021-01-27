@@ -1,4 +1,4 @@
-local LuaOperation = require("runtime/state/luaoperation")
+local Operation = require("runtime/constrant/operation")
 local Type = require("runtime/constrant/type")
 local Util = require("common/util")
 
@@ -57,7 +57,7 @@ function Action.forPrep(inst, vm)
     end
     vm:PushValue(a)
     vm:PushValue(a + 2)
-    vm:Arith(LuaOperation.LUA_OPSUB)
+    vm:Arith(Operation.LUA_OPSUB)
     vm:Replace(a)
     vm:AddPC(sBx)
 end
@@ -67,10 +67,10 @@ function Action.forLoop(inst, vm)
     a = a + 1
     vm:PushValue(a + 2)
     vm:PushValue(a)
-    vm:Arith(LuaOperation.LUA_OPADD)
+    vm:Arith(Operation.LUA_OPADD)
     vm:Replace(a)
     local isPositiveStep = vm:ToNumber(a + 2) >= 0
-    if isPositiveStep and vm:Compare(a, a + 1, LuaOperation.LUA_OPLE) or not isPositiveStep and vm:Compare(a + 1, a, LuaOperation.LUA_OPLE) then
+    if isPositiveStep and vm:Compare(a, a + 1, Operation.LUA_OPLE) or not isPositiveStep and vm:Compare(a + 1, a, Operation.LUA_OPLE) then
         vm:AddPC(sBx)
         vm:Copy(a, a + 3)
     end
@@ -236,71 +236,71 @@ function Action.call(inst, vm)
 end
 
 function Action.add(inst, vm)
-    Action._binaryArith(inst, vm, LuaOperation.LUA_OPADD)
+    Action._binaryArith(inst, vm, Operation.LUA_OPADD)
 end
 
 function Action.sub(inst, vm)
-    Action._binaryArith(inst, vm, LuaOperation.LUA_OPSUB)
+    Action._binaryArith(inst, vm, Operation.LUA_OPSUB)
 end
 
 function Action.mul(inst, vm)
-    Action._binaryArith(inst, vm, LuaOperation.LUA_OPMUL)
+    Action._binaryArith(inst, vm, Operation.LUA_OPMUL)
 end
 
 function Action.mod(inst, vm)
-    Action._binaryArith(inst, vm, LuaOperation.LUA_OPMOD)
+    Action._binaryArith(inst, vm, Operation.LUA_OPMOD)
 end
 
 function Action.pow(inst, vm)
-    Action._binaryArith(inst, vm, LuaOperation.LUA_OPPOW)
+    Action._binaryArith(inst, vm, Operation.LUA_OPPOW)
 end
 
 function Action.div(inst, vm)
-    Action._binaryArith(inst, vm, LuaOperation.LUA_OPDIV)
+    Action._binaryArith(inst, vm, Operation.LUA_OPDIV)
 end
 
 function Action.idiv(inst, vm)
-    Action._binaryArith(inst, vm, LuaOperation.LUA_OPIDIV)
+    Action._binaryArith(inst, vm, Operation.LUA_OPIDIV)
 end
 
 function Action.band(inst, vm)
-    Action._binaryArith(inst, vm, LuaOperation.LUA_OPBAND)
+    Action._binaryArith(inst, vm, Operation.LUA_OPBAND)
 end
 
 function Action.bor(inst, vm)
-    Action._binaryArith(inst, vm, LuaOperation.LUA_OPBOR)
+    Action._binaryArith(inst, vm, Operation.LUA_OPBOR)
 end
 
 function Action.bxor(inst, vm)
-    Action._binaryArith(inst, vm, LuaOperation.LUA_OPBXOR)
+    Action._binaryArith(inst, vm, Operation.LUA_OPBXOR)
 end
 
 function Action.shl(inst, vm)
-    Action._binaryArith(inst, vm, LuaOperation.LUA_OPSHL)
+    Action._binaryArith(inst, vm, Operation.LUA_OPSHL)
 end
 
 function Action.shr(inst, vm)
-    Action._binaryArith(inst, vm, LuaOperation.LUA_OPSHR)
+    Action._binaryArith(inst, vm, Operation.LUA_OPSHR)
 end
 
 function Action.unm(inst, vm)
-    Action._unaryArith(inst, vm, LuaOperation.LUA_OPUNM)
+    Action._unaryArith(inst, vm, Operation.LUA_OPUNM)
 end
 
 function Action.bnot(inst, vm)
-    Action._unaryArith(inst, vm, LuaOperation.LUA_OPBNOT)
+    Action._unaryArith(inst, vm, Operation.LUA_OPBNOT)
 end
 
 function Action.eq(inst, vm)
-    Action._compare(inst, vm, LuaOperation.LUA_OPEQ)
+    Action._compare(inst, vm, Operation.LUA_OPEQ)
 end
 
 function Action.lt(inst, vm)
-    Action._compare(inst, vm, LuaOperation.LUA_OPLT)
+    Action._compare(inst, vm, Operation.LUA_OPLT)
 end
 
 function Action.le(inst, vm)
-    Action._compare(inst, vm, LuaOperation.LUA_OPLE)
+    Action._compare(inst, vm, Operation.LUA_OPLE)
 end
 
 

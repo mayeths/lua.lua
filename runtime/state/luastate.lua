@@ -1,6 +1,6 @@
 local LuaStack = require("runtime/state/luastack")
 local LuaClosure = require("runtime/state/luaclosure")
-local LuaOperation = require("runtime/state/luaoperation")
+local Operation = require("runtime/constrant/operation")
 local BinaryChunk = require("runtime/binarychunk/binarychunk")
 local Type = require("runtime/constrant/type")
 local Arith = require("runtime/operation/arithmetic")
@@ -156,8 +156,8 @@ local Operators = {
 function LuaState:Arith(opid)
     local a, b
     b = self.stack:pop()
-    local isOPUNM = opid == LuaOperation.LUA_OPUNM
-    local isOPBNOT = opid == LuaOperation.LUA_OPBNOT
+    local isOPUNM = opid == Operation.LUA_OPUNM
+    local isOPBNOT = opid == Operation.LUA_OPBNOT
     if isOPUNM or isOPBNOT then
         a = b
     else
@@ -207,11 +207,11 @@ function LuaState:Compare(idx1, idx2, opid)
 
     local a = self.stack:get(idx1)
     local b = self.stack:get(idx2)
-    if opid == LuaOperation.LUA_OPEQ then
+    if opid == Operation.LUA_OPEQ then
         return Compare:eq(a, b)
-    elseif opid == LuaOperation.LUA_OPLT then
+    elseif opid == Operation.LUA_OPLT then
         return Compare:lt(a, b)
-    elseif opid == LuaOperation.LUA_OPLE then
+    elseif opid == Operation.LUA_OPLE then
         return Compare:le(a, b)
     else
         Util:panic("[LuaState:Compare ERROR] Invalid compare op!")
@@ -606,6 +606,7 @@ function LuaState:runClosure()
     while true do
         local inst = Instruction:new(self:Fetch())
         inst:Execute(self)
+        self:printStack()
         if inst:Opcode() + 1 == OPCODE.OP_RETURN then
             break
         end

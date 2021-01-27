@@ -1,4 +1,4 @@
-local LuaOperation = {
+local Operation = {
     -- https://github.com/lua/lua/blob/master/lua.h#L205
     LUA_OPADD  = 0,
     LUA_OPSUB  = 1,
@@ -20,4 +20,4 @@ local LuaOperation = {
     LUA_OPLE = 2,
 }
 
-return LuaOperation
+return Operation
