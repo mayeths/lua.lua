@@ -1,5 +1,5 @@
 local Stack = require("runtime/state/stack")
-local LuaClosure = require("runtime/state/luaclosure")
+local Table = require("runtime/state/type/table")
 local Operation = require("runtime/constrant/operation")
 local BinaryChunk = require("runtime/binarychunk/binarychunk")
 local Type = require("runtime/constrant/type")
@@ -315,12 +315,12 @@ function State:Type(idx)
     elseif valtype == "string" then
         return Type.LUA_TSTRING
     elseif valtype == "table" then
-        if type(val.table) == "table" then
+        if val.t == "table" then
             return Type.LUA_TTABLE
         elseif type(val.proto) == "table" then
             return Type.LUA_TFUNCTION
         else
-            Util:panic("[State:Type ERROR] Unknown table!")
+            Util:panic("[State:Type ERROR] Unknown type wrapper!")
         end
     else
         Util:panic("[State:Type ERROR] Unknown type!")
@@ -507,7 +507,7 @@ end
 
 
 function State:CreateTable(nArr, nRec)
-    local t = { table = {}}
+    local t = Table:new()
     self.stack:push(t)
 end
 

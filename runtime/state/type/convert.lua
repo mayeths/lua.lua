@@ -40,6 +40,9 @@ function Convert:any2str(val)
     elseif t == "string" then
         return val, true
     else
+        if val.t == "table" then
+            return tostring(val.table), true
+        end
         -- TODO: convert the custom type to string
         Util:panic("[Convert:any2str ERROR] unsupported convert")
     end
