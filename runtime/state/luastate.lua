@@ -3,7 +3,6 @@ local LuaClosure = require("runtime/state/luaclosure")
 local Operation = require("runtime/constrant/operation")
 local BinaryChunk = require("runtime/binarychunk/binarychunk")
 local Type = require("runtime/constrant/type")
-local Compare = require("runtime/operation/compare")
 local Convert = require("runtime/type/convert")
 local Logical = require("runtime/operation/logical")
 local Instruction = require("runtime/vm/instruction")
@@ -207,11 +206,11 @@ function LuaState:Compare(idx1, idx2, opid)
     local a = self.stack:get(idx1)
     local b = self.stack:get(idx2)
     if opid == Operation.LUA_OPEQ then
-        return Compare:eq(a, b)
+        return a == b
     elseif opid == Operation.LUA_OPLT then
-        return Compare:lt(a, b)
+        return a < b
     elseif opid == Operation.LUA_OPLE then
-        return Compare:le(a, b)
+        return a <= b
     else
         Util:panic("[LuaState:Compare ERROR] Invalid compare op!")
     end
