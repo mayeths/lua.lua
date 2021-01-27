@@ -42,6 +42,8 @@ function Convert:any2str(val)
     else
         if val.t == "table" then
             return tostring(val.table), true
+        elseif val.t == "function" then
+            return "function: "..tostring(val.proto):sub(8)
         end
         -- TODO: convert the custom type to string
         Util:panic("[Convert:any2str ERROR] unsupported convert")
