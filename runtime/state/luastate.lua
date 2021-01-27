@@ -1,8 +1,8 @@
 local LuaStack = require("runtime/state/luastack")
-local LuaType = require("runtime/state/luatype")
 local LuaClosure = require("runtime/state/luaclosure")
 local LuaOperation = require("runtime/state/luaoperation")
 local BinaryChunk = require("runtime/binarychunk/binarychunk")
+local Type = require("runtime/constrant/type")
 local Arith = require("runtime/operation/arithmetic")
 local Compare = require("runtime/operation/compare")
 local Convert = require("runtime/operation/convert")
@@ -281,21 +281,21 @@ end
 
 
 function LuaState:TypeName(tid)
-    if tid == LuaType.LUA_TNONE then
+    if tid == Type.LUA_TNONE then
         return "no value"
-    elseif tid == LuaType.LUA_TNIL then
+    elseif tid == Type.LUA_TNIL then
         return "nil"
-    elseif tid == LuaType.LUA_TBOOLEAN then
+    elseif tid == Type.LUA_TBOOLEAN then
         return "boolean"
-    elseif tid == LuaType.LUA_TNUMBER then
+    elseif tid == Type.LUA_TNUMBER then
         return "number"
-    elseif tid == LuaType.LUA_TSTRING then
+    elseif tid == Type.LUA_TSTRING then
         return "string"
-    elseif tid == LuaType.LUA_TTABLE then
+    elseif tid == Type.LUA_TTABLE then
         return "table"
-    elseif tid == LuaType.LUA_TFUNCTION then
+    elseif tid == Type.LUA_TFUNCTION then
         return "function"
-    elseif tid == LuaType.LUA_TTHREAD then
+    elseif tid == Type.LUA_TTHREAD then
         return "thread"
     else
         return "userdata"
@@ -305,23 +305,23 @@ end
 
 function LuaState:Type(idx)
     if not self.stack:isValid(idx) then
-        return LuaType.LUA_TNONE
+        return Type.LUA_TNONE
     end
     local val = self.stack:get(idx)
     local valtype = type(val)
     if valtype == "nil" then
-        return LuaType.LUA_TNIL
+        return Type.LUA_TNIL
     elseif valtype == "boolean" then
-        return LuaType.LUA_TBOOLEAN
+        return Type.LUA_TBOOLEAN
     elseif valtype == "number" then
-        return LuaType.LUA_TNUMBER
+        return Type.LUA_TNUMBER
     elseif valtype == "string" then
-        return LuaType.LUA_TSTRING
+        return Type.LUA_TSTRING
     elseif valtype == "table" then
         if type(val.table) == "table" then
-            return LuaType.LUA_TTABLE
+            return Type.LUA_TTABLE
         elseif type(val.proto) == "table" then
-            return LuaType.LUA_TFUNCTION
+            return Type.LUA_TFUNCTION
         else
             Util:panic("[LuaState:Type ERROR] Unknown table!")
         end
@@ -332,43 +332,43 @@ end
 
 
 function LuaState:IsNone(idx)
-    return self:Type(idx) == LuaType.LUA_TNONE
+    return self:Type(idx) == Type.LUA_TNONE
 end
 
 
 function LuaState:IsNil(idx)
-    return self:Type(idx) == LuaType.LUA_TNIL
+    return self:Type(idx) == Type.LUA_TNIL
 end
 
 
 function LuaState:IsNoneOrNil(idx)
-    return self:Type(idx) <= LuaType.LUA_TNIL
+    return self:Type(idx) <= Type.LUA_TNIL
 end
 
 
 function LuaState:IsBoolean(idx)
-    return self:Type(idx) == LuaType.LUA_TBOOLEAN
+    return self:Type(idx) == Type.LUA_TBOOLEAN
 end
 
 
 function LuaState:IsTable(idx)
-    return self:Type(idx) == LuaType.LUA_TTABLE
+    return self:Type(idx) == Type.LUA_TTABLE
 end
 
 
 function LuaState:IsFunction(idx)
-    return self:Type(idx) == LuaType.LUA_TFUNCTION
+    return self:Type(idx) == Type.LUA_TFUNCTION
 end
 
 
 function LuaState:IsThread(idx)
-    return self:Type(idx) == LuaType.LUA_TTHREAD
+    return self:Type(idx) == Type.LUA_TTHREAD
 end
 
 
 function LuaState:IsString(idx)
     local t = self:Type(idx)
-    return t == LuaType.LUA_TSTRING or t == LuaType.LUA_TNUMBER
+    return t == Type.LUA_TSTRING or t == Type.LUA_TNUMBER
 end
 
 
@@ -386,9 +386,9 @@ end
 
 function LuaState:ToBoolean(idx)
     local t = self:Type(idx)
-    if t == LuaType.LUA_TNIL then
+    if t == Type.LUA_TNIL then
         return false
-    elseif t == LuaType.LUA_TBOOLEAN then
+    elseif t == Type.LUA_TBOOLEAN then
         return self.stack:get(idx)
     else
         return true
@@ -636,17 +636,17 @@ function LuaState:printStack()
     local top = self:GetTop()
     for i = 1, top do
         local t = self:Type(i)
-        if t == LuaType.LUA_TBOOLEAN then
+        if t == Type.LUA_TBOOLEAN then
             Util:printf("[%s]", tostring(self:ToBoolean(i)))
-        elseif t == LuaType.LUA_TNUMBER then
+        elseif t == Type.LUA_TNUMBER then
             if self:IsInteger(i) then
                 Util:printf("[%s]", tostring(self:ToInteger(i)))
             else
                 Util:printf("[%s]", tostring(self:ToNumber(i)))
             end
-        elseif t == LuaType.LUA_TNIL then
+        elseif t == Type.LUA_TNIL then
             Util:printf("[%s]", "nil")
-        elseif t == LuaType.LUA_TSTRING then
+        elseif t == Type.LUA_TSTRING then
             Util:printf('["%s"]', self:ToString(i))
         else
             Util:printf("[%s]", self:TypeName(t))

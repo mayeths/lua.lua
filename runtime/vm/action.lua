@@ -1,5 +1,5 @@
 local LuaOperation = require("runtime/state/luaoperation")
-local LuaType = require("runtime/state/luatype")
+local Type = require("runtime/constrant/type")
 local Util = require("common/util")
 
 local Action = {}
@@ -43,15 +43,15 @@ end
 function Action.forPrep(inst, vm)
     local a, sBx = inst:AsBx()
     a = a + 1
-    if vm:Type(a) == LuaType.LUA_TSTRING then
+    if vm:Type(a) == Type.LUA_TSTRING then
         vm:PushNumber(vm:ToNumber(a))
         vm:Replace(a)
     end
-    if vm:Type(a + 1) == LuaType.LUA_TSTRING then
+    if vm:Type(a + 1) == Type.LUA_TSTRING then
         vm:PushNumber(vm:ToNumber(a + 1))
         vm:Replace(a + 1)
     end
-    if vm:Type(a + 2) == LuaType.LUA_TSTRING then
+    if vm:Type(a + 2) == Type.LUA_TSTRING then
         vm:PushNumber(vm:ToNumber(a + 2))
         vm:Replace(a + 2)
     end
