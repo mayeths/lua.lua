@@ -1,7 +1,7 @@
-local LuaState = require("runtime/state/state")
+local LuaState = require("runtime/state/luastate")
 require("test/lest")
 
-SCENARIO("Testing runtime/state/state basic function", function ()
+SCENARIO("Testing runtime/state/luastate basic function", function ()
 
     GIVEN("a new LuaState", function ()
         local state = nil
