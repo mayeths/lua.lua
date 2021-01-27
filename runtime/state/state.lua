@@ -1,12 +1,12 @@
 local Stack = require("runtime/state/stack")
 local Closure = require("runtime/state/type/closure")
 local Table = require("runtime/state/type/table")
-local Operation = require("runtime/constrant/operation")
 local BinaryChunk = require("runtime/binarychunk/binarychunk")
-local Type = require("runtime/constrant/type")
 local Convert = require("runtime/state/type/convert")
 local Instruction = require("runtime/vm/instruction")
 local OPCODE = require("lua/opcode")
+local OPERATION = require("lua/operation")
+local TYPE = require("lua/type")
 local Util = require("common/util")
 
 local State = {
@@ -154,8 +154,8 @@ local Operators = {
 function State:Arith(opid)
     local a, b
     b = self.stack:pop()
-    local isOPUNM = opid == Operation.LUA_OPUNM
-    local isOPBNOT = opid == Operation.LUA_OPBNOT
+    local isOPUNM = opid == OPERATION.LUA_OPUNM
+    local isOPBNOT = opid == OPERATION.LUA_OPBNOT
     if isOPUNM or isOPBNOT then
         a = b
     else
@@ -205,11 +205,11 @@ function State:Compare(idx1, idx2, opid)
 
     local a = self.stack:get(idx1)
     local b = self.stack:get(idx2)
-    if opid == Operation.LUA_OPEQ then
+    if opid == OPERATION.LUA_OPEQ then
         return a == b
-    elseif opid == Operation.LUA_OPLT then
+    elseif opid == OPERATION.LUA_OPLT then
         return a < b
-    elseif opid == Operation.LUA_OPLE then
+    elseif opid == OPERATION.LUA_OPLE then
         return a <= b
     else
         Util:panic("[State:Compare ERROR] Invalid compare op!")
@@ -279,21 +279,21 @@ end
 
 
 function State:TypeName(tid)
-    if tid == Type.LUA_TNONE then
+    if tid == TYPE.LUA_TNONE then
         return "no value"
-    elseif tid == Type.LUA_TNIL then
+    elseif tid == TYPE.LUA_TNIL then
         return "nil"
-    elseif tid == Type.LUA_TBOOLEAN then
+    elseif tid == TYPE.LUA_TBOOLEAN then
         return "boolean"
-    elseif tid == Type.LUA_TNUMBER then
+    elseif tid == TYPE.LUA_TNUMBER then
         return "number"
-    elseif tid == Type.LUA_TSTRING then
+    elseif tid == TYPE.LUA_TSTRING then
         return "string"
-    elseif tid == Type.LUA_TTABLE then
+    elseif tid == TYPE.LUA_TTABLE then
         return "table"
-    elseif tid == Type.LUA_TFUNCTION then
+    elseif tid == TYPE.LUA_TFUNCTION then
         return "function"
-    elseif tid == Type.LUA_TTHREAD then
+    elseif tid == TYPE.LUA_TTHREAD then
         return "thread"
     else
         return "userdata"
@@ -303,23 +303,23 @@ end
 
 function State:Type(idx)
     if not self.stack:isValid(idx) then
-        return Type.LUA_TNONE
+        return TYPE.LUA_TNONE
     end
     local val = self.stack:get(idx)
     local valtype = type(val)
     if valtype == "nil" then
-        return Type.LUA_TNIL
+        return TYPE.LUA_TNIL
     elseif valtype == "boolean" then
-        return Type.LUA_TBOOLEAN
+        return TYPE.LUA_TBOOLEAN
     elseif valtype == "number" then
-        return Type.LUA_TNUMBER
+        return TYPE.LUA_TNUMBER
     elseif valtype == "string" then
-        return Type.LUA_TSTRING
+        return TYPE.LUA_TSTRING
     elseif valtype == "table" then
         if val.t == "table" then
-            return Type.LUA_TTABLE
+            return TYPE.LUA_TTABLE
         elseif val.t == "function" then
-            return Type.LUA_TFUNCTION
+            return TYPE.LUA_TFUNCTION
         else
             Util:panic("[State:Type ERROR] Unknown type wrapper!")
         end
@@ -330,43 +330,43 @@ end
 
 
 function State:IsNone(idx)
-    return self:Type(idx) == Type.LUA_TNONE
+    return self:Type(idx) == TYPE.LUA_TNONE
 end
 
 
 function State:IsNil(idx)
-    return self:Type(idx) == Type.LUA_TNIL
+    return self:Type(idx) == TYPE.LUA_TNIL
 end
 
 
 function State:IsNoneOrNil(idx)
-    return self:Type(idx) <= Type.LUA_TNIL
+    return self:Type(idx) <= TYPE.LUA_TNIL
 end
 
 
 function State:IsBoolean(idx)
-    return self:Type(idx) == Type.LUA_TBOOLEAN
+    return self:Type(idx) == TYPE.LUA_TBOOLEAN
 end
 
 
 function State:IsTable(idx)
-    return self:Type(idx) == Type.LUA_TTABLE
+    return self:Type(idx) == TYPE.LUA_TTABLE
 end
 
 
 function State:IsFunction(idx)
-    return self:Type(idx) == Type.LUA_TFUNCTION
+    return self:Type(idx) == TYPE.LUA_TFUNCTION
 end
 
 
 function State:IsThread(idx)
-    return self:Type(idx) == Type.LUA_TTHREAD
+    return self:Type(idx) == TYPE.LUA_TTHREAD
 end
 
 
 function State:IsString(idx)
     local t = self:Type(idx)
-    return t == Type.LUA_TSTRING or t == Type.LUA_TNUMBER
+    return t == TYPE.LUA_TSTRING or t == TYPE.LUA_TNUMBER
 end
 
 
@@ -384,9 +384,9 @@ end
 
 function State:ToBoolean(idx)
     local t = self:Type(idx)
-    if t == Type.LUA_TNIL then
+    if t == TYPE.LUA_TNIL then
         return false
-    elseif t == Type.LUA_TBOOLEAN then
+    elseif t == TYPE.LUA_TBOOLEAN then
         return self.stack:get(idx)
     else
         return true
@@ -565,7 +565,7 @@ end
 
 function State:Call(nRealParams, nRealResults)
     local idx = - (nRealParams + 1)
-    if self:Type(idx) ~= Type.LUA_TFUNCTION then
+    if self:Type(idx) ~= TYPE.LUA_TFUNCTION then
         Util:panic("[State:Call ERROR] not a function")
     end
     local closure = self.stack:get(idx)
@@ -636,17 +636,17 @@ function State:printStack()
     local top = self:GetTop()
     for i = 1, top do
         local t = self:Type(i)
-        if t == Type.LUA_TBOOLEAN then
+        if t == TYPE.LUA_TBOOLEAN then
             Util:printf("[%s]", tostring(self:ToBoolean(i)))
-        elseif t == Type.LUA_TNUMBER then
+        elseif t == TYPE.LUA_TNUMBER then
             if self:IsInteger(i) then
                 Util:printf("[%s]", tostring(self:ToInteger(i)))
             else
                 Util:printf("[%s]", tostring(self:ToNumber(i)))
             end
-        elseif t == Type.LUA_TNIL then
+        elseif t == TYPE.LUA_TNIL then
             Util:printf("[%s]", "nil")
-        elseif t == Type.LUA_TSTRING then
+        elseif t == TYPE.LUA_TSTRING then
             Util:printf('["%s"]', self:ToString(i))
         else
             Util:printf("[%s]", self:TypeName(t))

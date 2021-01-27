@@ -1,5 +1,5 @@
-local Operation = require("runtime/constrant/operation")
-local Type = require("runtime/constrant/type")
+local OPERATION = require("lua/operation")
+local TYPE = require("lua/type")
 local Util = require("common/util")
 
 local Action = {}
@@ -43,21 +43,21 @@ end
 function Action.ForPrep(inst, vm)
     local a, sBx = inst:AsBx()
     a = a + 1
-    if vm:Type(a) == Type.LUA_TSTRING then
+    if vm:Type(a) == TYPE.LUA_TSTRING then
         vm:PushNumber(vm:ToNumber(a))
         vm:Replace(a)
     end
-    if vm:Type(a + 1) == Type.LUA_TSTRING then
+    if vm:Type(a + 1) == TYPE.LUA_TSTRING then
         vm:PushNumber(vm:ToNumber(a + 1))
         vm:Replace(a + 1)
     end
-    if vm:Type(a + 2) == Type.LUA_TSTRING then
+    if vm:Type(a + 2) == TYPE.LUA_TSTRING then
         vm:PushNumber(vm:ToNumber(a + 2))
         vm:Replace(a + 2)
     end
     vm:PushValue(a)
     vm:PushValue(a + 2)
-    vm:Arith(Operation.LUA_OPSUB)
+    vm:Arith(OPERATION.LUA_OPSUB)
     vm:Replace(a)
     vm:AddPC(sBx)
 end
@@ -67,10 +67,10 @@ function Action.ForLoop(inst, vm)
     a = a + 1
     vm:PushValue(a + 2)
     vm:PushValue(a)
-    vm:Arith(Operation.LUA_OPADD)
+    vm:Arith(OPERATION.LUA_OPADD)
     vm:Replace(a)
     local isPositiveStep = vm:ToNumber(a + 2) >= 0
-    if isPositiveStep and vm:Compare(a, a + 1, Operation.LUA_OPLE) or not isPositiveStep and vm:Compare(a + 1, a, Operation.LUA_OPLE) then
+    if isPositiveStep and vm:Compare(a, a + 1, OPERATION.LUA_OPLE) or not isPositiveStep and vm:Compare(a + 1, a, OPERATION.LUA_OPLE) then
         vm:AddPC(sBx)
         vm:Copy(a, a + 3)
     end
@@ -236,71 +236,71 @@ function Action.Call(inst, vm)
 end
 
 function Action.Add(inst, vm)
-    Action._binaryArith(inst, vm, Operation.LUA_OPADD)
+    Action._binaryArith(inst, vm, OPERATION.LUA_OPADD)
 end
 
 function Action.Sub(inst, vm)
-    Action._binaryArith(inst, vm, Operation.LUA_OPSUB)
+    Action._binaryArith(inst, vm, OPERATION.LUA_OPSUB)
 end
 
 function Action.Mul(inst, vm)
-    Action._binaryArith(inst, vm, Operation.LUA_OPMUL)
+    Action._binaryArith(inst, vm, OPERATION.LUA_OPMUL)
 end
 
 function Action.Mod(inst, vm)
-    Action._binaryArith(inst, vm, Operation.LUA_OPMOD)
+    Action._binaryArith(inst, vm, OPERATION.LUA_OPMOD)
 end
 
 function Action.Pow(inst, vm)
-    Action._binaryArith(inst, vm, Operation.LUA_OPPOW)
+    Action._binaryArith(inst, vm, OPERATION.LUA_OPPOW)
 end
 
 function Action.Div(inst, vm)
-    Action._binaryArith(inst, vm, Operation.LUA_OPDIV)
+    Action._binaryArith(inst, vm, OPERATION.LUA_OPDIV)
 end
 
 function Action.Idiv(inst, vm)
-    Action._binaryArith(inst, vm, Operation.LUA_OPIDIV)
+    Action._binaryArith(inst, vm, OPERATION.LUA_OPIDIV)
 end
 
 function Action.Band(inst, vm)
-    Action._binaryArith(inst, vm, Operation.LUA_OPBAND)
+    Action._binaryArith(inst, vm, OPERATION.LUA_OPBAND)
 end
 
 function Action.Bor(inst, vm)
-    Action._binaryArith(inst, vm, Operation.LUA_OPBOR)
+    Action._binaryArith(inst, vm, OPERATION.LUA_OPBOR)
 end
 
 function Action.Bxor(inst, vm)
-    Action._binaryArith(inst, vm, Operation.LUA_OPBXOR)
+    Action._binaryArith(inst, vm, OPERATION.LUA_OPBXOR)
 end
 
 function Action.Shl(inst, vm)
-    Action._binaryArith(inst, vm, Operation.LUA_OPSHL)
+    Action._binaryArith(inst, vm, OPERATION.LUA_OPSHL)
 end
 
 function Action.Shr(inst, vm)
-    Action._binaryArith(inst, vm, Operation.LUA_OPSHR)
+    Action._binaryArith(inst, vm, OPERATION.LUA_OPSHR)
 end
 
 function Action.Unm(inst, vm)
-    Action._unaryArith(inst, vm, Operation.LUA_OPUNM)
+    Action._unaryArith(inst, vm, OPERATION.LUA_OPUNM)
 end
 
 function Action.Bnot(inst, vm)
-    Action._unaryArith(inst, vm, Operation.LUA_OPBNOT)
+    Action._unaryArith(inst, vm, OPERATION.LUA_OPBNOT)
 end
 
 function Action.Eq(inst, vm)
-    Action._compare(inst, vm, Operation.LUA_OPEQ)
+    Action._compare(inst, vm, OPERATION.LUA_OPEQ)
 end
 
 function Action.Lt(inst, vm)
-    Action._compare(inst, vm, Operation.LUA_OPLT)
+    Action._compare(inst, vm, OPERATION.LUA_OPLT)
 end
 
 function Action.Le(inst, vm)
-    Action._compare(inst, vm, Operation.LUA_OPLE)
+    Action._compare(inst, vm, OPERATION.LUA_OPLE)
 end
 
 
