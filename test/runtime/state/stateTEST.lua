@@ -1,13 +1,13 @@
-local LuaState = require("runtime/state/luastate")
+local State = require("runtime/state/state")
 require("test/lest")
 
-SCENARIO("Testing runtime/state/luastate basic function", function ()
+SCENARIO("Testing runtime/state/state basic function", function ()
 
-    GIVEN("a new LuaState", function ()
+    GIVEN("a new State", function ()
         local state = nil
 
         SETUP(function ()
-            state = LuaState:new(20)
+            state = State:new(20)
         end)
 
         IT_SHOULD("return an empty lua state correctly", function ()

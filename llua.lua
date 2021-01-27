@@ -1,4 +1,4 @@
-local LuaState = require("runtime/state/luastate")
+local State = require("runtime/state/state")
 local Util = require("common/util")
 
 
@@ -12,7 +12,7 @@ function LLUA:main()
     local fd = io.open(arg[1], "rb")
     local data = fd:read("*all")
     fd:close()
-    local ls = LuaState:new()
+    local ls = State:new()
     ls:Load(data, arg[1], "b")
     ls:Call(0, 0)
 end

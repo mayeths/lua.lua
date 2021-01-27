@@ -8,73 +8,73 @@ local Instruction = require("runtime/vm/instruction")
 local OPCODE = require("runtime/vm/opcode")
 local Util = require("common/util")
 
-local LuaState = {
+local State = {
     stack = nil,
 }
 
 
-function LuaState:new()
-    LuaState.__index = LuaState
-    self = setmetatable({}, LuaState)
+function State:new()
+    State.__index = State
+    self = setmetatable({}, State)
     self.stack = LuaStack:new(20)
     return self
 end
 
 
-function LuaState:GetTop()
+function State:GetTop()
     return self.stack:gettop()
 end
 
 
-function LuaState:AbsIndex(idx)
+function State:AbsIndex(idx)
     return self.stack:absIndex(idx)
 end
 
 
-function LuaState:CheckStack(freenum)
+function State:CheckStack(freenum)
     self.stack:ensure(freenum)
     return true
 end
 
 
-function LuaState:Pop(n)
+function State:Pop(n)
     for _ = 1, n do
         self.stack:pop()
     end
 end
 
 
-function LuaState:Copy(fromIdx, toIdx)
+function State:Copy(fromIdx, toIdx)
     local val = self.stack:get(fromIdx)
     self.stack:set(toIdx, val)
 end
 
 
-function LuaState:PushValue(idx)
+function State:PushValue(idx)
     local val = self.stack:get(idx)
     self.stack:push(val)
 end
 
 
-function LuaState:Replace(idx)
+function State:Replace(idx)
     local val = self.stack:pop()
     self.stack:set(idx, val)
 end
 
 
-function LuaState:Insert(idx)
+function State:Insert(idx)
     self:Rotate(idx, 1)
 end
 
 
-function LuaState:Remove(idx)
+function State:Remove(idx)
     self:Rotate(idx, -1)
     self:Pop(1)
 end
 
 -- What does lua_rotate do?
 -- https://stackoverflow.com/a/52241763
-function LuaState:Rotate(idx, n)
+function State:Rotate(idx, n)
     local t3 = self:GetTop()
     local t1 = self:AbsIndex(idx)
     local t2
@@ -89,10 +89,10 @@ function LuaState:Rotate(idx, n)
 end
 
 
-function LuaState:SetTop(idx)
+function State:SetTop(idx)
     local newTop = self:AbsIndex(idx)
     if newTop < 0 then
-        Util:panic("[LuaState:SetTop ERROR] Stack underflow!")
+        Util:panic("[State:SetTop ERROR] Stack underflow!")
     end
     local operateSlotNum = newTop - self:GetTop()
     if operateSlotNum < 0 then
@@ -150,7 +150,7 @@ local Operators = {
 
 
 -- http://www.lua.org/manual/5.3/manual.html#lua_arith
-function LuaState:Arith(opid)
+function State:Arith(opid)
     local a, b
     b = self.stack:pop()
     local isOPUNM = opid == Operation.LUA_OPUNM
@@ -172,7 +172,7 @@ function LuaState:Arith(opid)
             self.stack:push(result)
             return
         end
-        Util:panic("[LuaState:Arith ERROR] Can not perform bitwise op!")
+        Util:panic("[State:Arith ERROR] Can not perform bitwise op!")
     else
         if tryIntFnFirst then
             local x, ok1 = Convert:any2int(a)
@@ -190,12 +190,12 @@ function LuaState:Arith(opid)
             self.stack:push(result)
             return
         end
-        Util:panic("[LuaState:Arith ERROR] Can not perform any op!")
+        Util:panic("[State:Arith ERROR] Can not perform any op!")
     end
 end
 
 
-function LuaState:Compare(idx1, idx2, opid)
+function State:Compare(idx1, idx2, opid)
     local idx1valid = self.stack:isValid(idx1)
     local idx2valid = self.stack:isValid(idx2)
     if not idx1valid or not idx2valid then
@@ -211,12 +211,12 @@ function LuaState:Compare(idx1, idx2, opid)
     elseif opid == Operation.LUA_OPLE then
         return a <= b
     else
-        Util:panic("[LuaState:Compare ERROR] Invalid compare op!")
+        Util:panic("[State:Compare ERROR] Invalid compare op!")
     end
 end
 
 
-function LuaState:Len(idx)
+function State:Len(idx)
     local val = self.stack:get(idx)
     if type(val) == "table" then
         self.stack:push(#val.table)
@@ -226,7 +226,7 @@ function LuaState:Len(idx)
 end
 
 
-function LuaState:Concat(n)
+function State:Concat(n)
     if n == 0 then
         self.stack.push("")
     elseif n == 1 then
@@ -240,18 +240,18 @@ function LuaState:Concat(n)
             self.stack:pop()
             self.stack:push(s1..s2)
         else
-            Util:panic("[LuaState:Concat ERROR] Concatenation error!")
+            Util:panic("[State:Concat ERROR] Concatenation error!")
         end
     end
 end
 
 
-function LuaState:PushNil()
+function State:PushNil()
     self.stack:push(nil)
 end
 
 
-function LuaState:PushBoolean(b)
+function State:PushBoolean(b)
     Util:assert(type(b), "boolean",
         "Pushing a non-boolean value by PushBoolean method"
     )
@@ -259,7 +259,7 @@ function LuaState:PushBoolean(b)
 end
 
 
-function LuaState:PushInteger(n)
+function State:PushInteger(n)
     Util:assert(math.type(n), "integer",
         "Pushing a non-integer value by PushInteger method"
     )
@@ -267,17 +267,17 @@ function LuaState:PushInteger(n)
 end
 
 
-function LuaState:PushNumber(n)
+function State:PushNumber(n)
     self.stack:push(n)
 end
 
 
-function LuaState:PushString(s)
+function State:PushString(s)
     self.stack:push(s)
 end
 
 
-function LuaState:TypeName(tid)
+function State:TypeName(tid)
     if tid == Type.LUA_TNONE then
         return "no value"
     elseif tid == Type.LUA_TNIL then
@@ -300,7 +300,7 @@ function LuaState:TypeName(tid)
 end
 
 
-function LuaState:Type(idx)
+function State:Type(idx)
     if not self.stack:isValid(idx) then
         return Type.LUA_TNONE
     end
@@ -320,68 +320,68 @@ function LuaState:Type(idx)
         elseif type(val.proto) == "table" then
             return Type.LUA_TFUNCTION
         else
-            Util:panic("[LuaState:Type ERROR] Unknown table!")
+            Util:panic("[State:Type ERROR] Unknown table!")
         end
     else
-        Util:panic("[LuaState:Type ERROR] Unknown type!")
+        Util:panic("[State:Type ERROR] Unknown type!")
     end
 end
 
 
-function LuaState:IsNone(idx)
+function State:IsNone(idx)
     return self:Type(idx) == Type.LUA_TNONE
 end
 
 
-function LuaState:IsNil(idx)
+function State:IsNil(idx)
     return self:Type(idx) == Type.LUA_TNIL
 end
 
 
-function LuaState:IsNoneOrNil(idx)
+function State:IsNoneOrNil(idx)
     return self:Type(idx) <= Type.LUA_TNIL
 end
 
 
-function LuaState:IsBoolean(idx)
+function State:IsBoolean(idx)
     return self:Type(idx) == Type.LUA_TBOOLEAN
 end
 
 
-function LuaState:IsTable(idx)
+function State:IsTable(idx)
     return self:Type(idx) == Type.LUA_TTABLE
 end
 
 
-function LuaState:IsFunction(idx)
+function State:IsFunction(idx)
     return self:Type(idx) == Type.LUA_TFUNCTION
 end
 
 
-function LuaState:IsThread(idx)
+function State:IsThread(idx)
     return self:Type(idx) == Type.LUA_TTHREAD
 end
 
 
-function LuaState:IsString(idx)
+function State:IsString(idx)
     local t = self:Type(idx)
     return t == Type.LUA_TSTRING or t == Type.LUA_TNUMBER
 end
 
 
-function LuaState:IsNumber(idx)
+function State:IsNumber(idx)
     local val = self.stack:get(idx)
     return math.type(val) ~= nil
 end
 
 
-function LuaState:IsInteger(idx)
+function State:IsInteger(idx)
     local val = self.stack:get(idx)
     return math.type(val) == "integer"
 end
 
 
-function LuaState:ToBoolean(idx)
+function State:ToBoolean(idx)
     local t = self:Type(idx)
     if t == Type.LUA_TNIL then
         return false
@@ -393,13 +393,13 @@ function LuaState:ToBoolean(idx)
 end
 
 
-function LuaState:ToInteger(idx)
+function State:ToInteger(idx)
     local i, _ = self:ToIntegerX(idx)
     return i
 end
 
 
-function LuaState:ToIntegerX(idx)
+function State:ToIntegerX(idx)
     local val = self.stack:get(idx)
     local mtype = math.type(val)
     if mtype == "integer" then
@@ -412,13 +412,13 @@ function LuaState:ToIntegerX(idx)
 end
 
 
-function LuaState:ToNumber(idx)
+function State:ToNumber(idx)
     local n, _ = self:ToNumberX(idx)
     return n
 end
 
 
-function LuaState:ToNumberX(idx)
+function State:ToNumberX(idx)
     local val = self.stack:get(idx)
     local mtype = math.type(val)
     if mtype ~= nil then
@@ -429,13 +429,13 @@ function LuaState:ToNumberX(idx)
 end
 
 
-function LuaState:ToString(idx)
+function State:ToString(idx)
     local s, _ = self:ToStringX(idx)
     return s
 end
 
 
-function LuaState:ToStringX(idx)
+function State:ToStringX(idx)
     local val = self.stack:get(idx)
     local t = type(val)
     if t == "string" then
@@ -448,30 +448,30 @@ function LuaState:ToStringX(idx)
 end
 
 
-function LuaState:PC()
+function State:PC()
     return self.stack.pc
 end
 
 
-function LuaState:AddPC(n)
+function State:AddPC(n)
     self.stack.pc = self.stack.pc + n
 end
 
 
-function LuaState:Fetch()
+function State:Fetch()
     self.stack.pc = self.stack.pc + 1
     local i = self.stack.closure.proto.Code[self.stack.pc]
     return i
 end
 
 
-function LuaState:GetConst(idx)
+function State:GetConst(idx)
     local c = self.stack.closure.proto.Constants[idx + 1]
     self.stack:push(c)
 end
 
 
-function LuaState:GetRK(rk)
+function State:GetRK(rk)
     if rk > 0xFF then
         self:GetConst(rk & 0xFF)
     else
@@ -480,12 +480,12 @@ function LuaState:GetRK(rk)
 end
 
 
-function LuaState:RegisterCount()
+function State:RegisterCount()
     return self.stack.closure.proto.MaxStackSize
 end
 
 
-function LuaState:LoadVararg(n)
+function State:LoadVararg(n)
     if n < 0 then
         n = #self.stack.varargs
     end
@@ -494,24 +494,24 @@ function LuaState:LoadVararg(n)
 end
 
 
-function LuaState:LoadProto(idx)
+function State:LoadProto(idx)
     local proto = self.stack.closure.proto.Protos[idx]
     local closure = LuaClosure:new(proto)
     self.stack:push(closure)
 end
 
 
-function LuaState:NewTable()
+function State:NewTable()
     self:CreateTable(0, 0)
 end
 
 
-function LuaState:CreateTable(nArr, nRec)
+function State:CreateTable(nArr, nRec)
     local t = { table = {}}
     self.stack:push(t)
 end
 
-function LuaState:GetTable(idx)
+function State:GetTable(idx)
     local t = self.stack:get(idx)
     local k = self.stack:pop()
     self.stack:push(t.table[k])
@@ -519,21 +519,21 @@ function LuaState:GetTable(idx)
 end
 
 
-function LuaState:GetFeild(idx, k)
+function State:GetFeild(idx, k)
     local t = self.stack:get(idx)
     self.stack:push(t.table[k])
     return type(t.table[k])
 end
 
 
-function LuaState:GetI(idx, i)
+function State:GetI(idx, i)
     local t = self.stack:get(idx)
     self.stack:push(t.table[i])
     return type(t.table[i])
 end
 
 
-function LuaState:SetTable(idx)
+function State:SetTable(idx)
     local t = self.stack:get(idx)
     local v = self.stack:pop()
     local k = self.stack:pop()
@@ -541,31 +541,31 @@ function LuaState:SetTable(idx)
 end
 
 
-function LuaState:SetField(idx, k)
+function State:SetField(idx, k)
     local t = self.stack:get(idx)
     local v = self.stack:pop()
     t.table[k] = v
 end
 
 
-function LuaState:SetI(idx, i)
+function State:SetI(idx, i)
     local t = self.stack:get(idx)
     local v = self.stack:pop()
     t.table[i] = v
 end
 
 
-function LuaState:Load(chunk, name, mode)
+function State:Load(chunk, name, mode)
     local proto = BinaryChunk:Undump(chunk)
     local closure = LuaClosure:new(proto)
     self.stack:push(closure)
 end
 
 
-function LuaState:Call(nRealParams, nRealResults)
+function State:Call(nRealParams, nRealResults)
     local closure = self.stack:get(-(nRealParams + 1))
     if not LuaClosure:isClosure(closure) then
-        Util:panic("[LuaState:Call ERROR] not a function")
+        Util:panic("[State:Call ERROR] not a function")
     end
     local proto = closure.proto
     Util:printf("calling %s<%d,%d>\n", proto.Source,
@@ -599,7 +599,7 @@ function LuaState:Call(nRealParams, nRealResults)
 end
 
 
-function LuaState:runClosure()
+function State:runClosure()
     while true do
         local inst = Instruction:new(self:Fetch())
         inst:Execute(self)
@@ -617,20 +617,20 @@ end
 
 
 
-function LuaState:pushLuaStack(stack)
+function State:pushLuaStack(stack)
     stack.prev = self.stack
     self.stack = stack
 end
 
 
-function LuaState:popLuaStack()
+function State:popLuaStack()
     local stack = self.stack
     self.stack = stack.prev
     stack.prev = nil
 end
 
 
-function LuaState:printStack()
+function State:printStack()
     local top = self:GetTop()
     for i = 1, top do
         local t = self:Type(i)
@@ -653,4 +653,4 @@ function LuaState:printStack()
     Util:println("")
 end
 
-return LuaState
+return State
