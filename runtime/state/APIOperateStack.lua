@@ -3,7 +3,7 @@ local Util = require("common/util")
 
 
 function LuaState:GetTop()
-    return self.stack:size()
+    return self.stack:gettop()
 end
 
 

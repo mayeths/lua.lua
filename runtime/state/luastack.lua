@@ -4,7 +4,7 @@ local Util = require("common/util")
 
 local LuaStack = {
     slots = nil,
-    _capacity = nil,
+    _top = nil,
 }
 
 
@@ -12,26 +12,27 @@ function LuaStack:new(capacity)
     LuaStack.__index = LuaStack
     self = setmetatable({}, LuaStack)
     self.slots = {}
-    self._capacity = capacity
+    for i = 1, capacity do
+        self.slots[i] = self.slots
+    end
+    self._top = 0
     return self
 end
 
 
-function LuaStack:size()
-    return #self.slots
+function LuaStack:gettop()
+    return self._top
 end
 
 
-function LuaStack:capacity()
-    return self._capacity
+function LuaStack:settop(n)
+    self._top = n
 end
 
 
 function LuaStack:ensure(freenum)
-    local currfree = self._capacity - #self.slots
-    local needmore = freenum - currfree
-    if needmore > 0 then
-        self._capacity = self._capacity + needmore
+    for i = #self.slots + 1, self._top + freenum do
+        self.slots[i] = self.slots
     end
 end
 
@@ -55,23 +56,35 @@ function LuaStack:set(idx, val)
         Util:panic("[LuaStack:set ERROR] Invalid index!")
     end
     local absIdx = self:absIndex(idx)
-    self.slots[absIdx] = val
+    if val == nil then
+        self.slots[absIdx] = self.slots
+    else
+        self.slots[absIdx] = val
+    end
 end
 
 
 function LuaStack:push(val)
-    if #self.slots >= self._capacity then
+    if self._top == #self.slots then
         Util:panic("[LuaStack:push ERROR] Stack overflow!")
     end
-    self.slots[#self.slots + 1] = val or self.slots
+    self._top = self._top + 1
+    if val == nil then
+        self.slots[self._top] = self.slots
+    else
+        self.slots[self._top] = val
+    end
+end
 end
 
 
 function LuaStack:pop()
-    if #self.slots < 1 then
+    if self._top < 1 then
         Util:panic("[LuaStack:pop ERROR] Stack underflow!")
     end
-    local val = table.remove(self.slots)
+    local val = self.slots[self._top]
+    self.slots[self._top] = self.slots
+    self._top = self._top - 1
     if val == self.slots then
         return nil
     else
@@ -82,7 +95,7 @@ end
 
 function LuaStack:absIndex(idx)
     if idx < 0 then
-        return #self.slots + idx + 1
+        return self._top + idx + 1
     else
         return idx
     end
@@ -91,7 +104,7 @@ end
 
 function LuaStack:isValid(idx)
     local absIdx = self:absIndex(idx)
-    return absIdx >= 1 and absIdx <= #self.slots
+    return absIdx >= 1 and absIdx <= self._top
 end
 
 
