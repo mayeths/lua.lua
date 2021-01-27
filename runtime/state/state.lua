@@ -6,7 +6,7 @@ local BinaryChunk = require("runtime/binarychunk/binarychunk")
 local Type = require("runtime/constrant/type")
 local Convert = require("runtime/state/type/convert")
 local Instruction = require("runtime/vm/instruction")
-local OPCODE = require("runtime/vm/opcode")
+local OPCODE = require("lua/opcode")
 local Util = require("common/util")
 
 local State = {

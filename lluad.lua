@@ -1,7 +1,7 @@
 local BinaryChunk = require("runtime/binarychunk/binarychunk")
 local Instruction = require("runtime/vm/instruction")
-local OPMODE = require("runtime/vm/opmode")
-local OPARGMASK = require("runtime/vm/opargmask")
+local OPMODE = require("lua/opmode")
+local OPARGMASK = require("lua/opargmask")
 local Util = require("common/util")
 
 
