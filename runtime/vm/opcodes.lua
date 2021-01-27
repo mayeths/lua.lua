@@ -41,7 +41,7 @@ local Opcodes = {
     Opcode:new(0, 0, OPARGMASK.OpArgU, OPARGMASK.OpArgN, OPMODE.IABC,  "SETUPVAL", nil), -- UpValue[B] := R(A)
     Opcode:new(0, 0, OPARGMASK.OpArgK, OPARGMASK.OpArgK, OPMODE.IABC,  "SETTABLE", Action.setTable), -- R(A)[RK(B)] := RK(C)
     Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgU, OPMODE.IABC,  "NEWTABLE", Action.newTable), -- R(A) := {} (size = B,C)
-    Opcode:new(0, 1, OPARGMASK.OpArgR, OPARGMASK.OpArgK, OPMODE.IABC,  "SELF    ", nil), -- R(A+1) := R(B); R(A) := R(B)[RK(C)]
+    Opcode:new(0, 1, OPARGMASK.OpArgR, OPARGMASK.OpArgK, OPMODE.IABC,  "SELF    ", Action.self), -- R(A+1) := R(B); R(A) := R(B)[RK(C)]
     Opcode:new(0, 1, OPARGMASK.OpArgK, OPARGMASK.OpArgK, OPMODE.IABC,  "ADD     ", Action.add), -- R(A) := RK(B) + RK(C)
     Opcode:new(0, 1, OPARGMASK.OpArgK, OPARGMASK.OpArgK, OPMODE.IABC,  "SUB     ", Action.sub), -- R(A) := RK(B) - RK(C)
     Opcode:new(0, 1, OPARGMASK.OpArgK, OPARGMASK.OpArgK, OPMODE.IABC,  "MUL     ", Action.mul), -- R(A) := RK(B) * RK(C)
@@ -65,16 +65,16 @@ local Opcodes = {
     Opcode:new(1, 0, OPARGMASK.OpArgK, OPARGMASK.OpArgK, OPMODE.IABC,  "LE      ", Action.le), -- if ((RK(B) <= RK(C)) ~= A) then pc++
     Opcode:new(1, 0, OPARGMASK.OpArgN, OPARGMASK.OpArgU, OPMODE.IABC,  "TEST    ", Action.test), -- if not (R(A) <=> C) then pc++
     Opcode:new(1, 1, OPARGMASK.OpArgR, OPARGMASK.OpArgU, OPMODE.IABC,  "TESTSET ", Action.testSet), -- if (R(B) <=> C) then R(A) := R(B) else pc++
-    Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgU, OPMODE.IABC,  "CALL    ", nil), -- R(A), ... ,R(A+C-2) := R(A)(R(A+1), ... ,R(A+B-1))
-    Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgU, OPMODE.IABC,  "TAILCALL", nil), -- return R(A)(R(A+1), ... ,R(A+B-1))
-    Opcode:new(0, 0, OPARGMASK.OpArgU, OPARGMASK.OpArgN, OPMODE.IABC,  "RETURN  ", nil), -- return R(A), ... ,R(A+B-2)
+    Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgU, OPMODE.IABC,  "CALL    ", Action.call), -- R(A), ... ,R(A+C-2) := R(A)(R(A+1), ... ,R(A+B-1))
+    Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgU, OPMODE.IABC,  "TAILCALL", Action.tailCall), -- return R(A)(R(A+1), ... ,R(A+B-1))
+    Opcode:new(0, 0, OPARGMASK.OpArgU, OPARGMASK.OpArgN, OPMODE.IABC,  "RETURN  ", Action._return), -- return R(A), ... ,R(A+B-2)
     Opcode:new(0, 1, OPARGMASK.OpArgR, OPARGMASK.OpArgN, OPMODE.IAsBx, "FORLOOP ", Action.forLoop), -- R(A)+=R(A+2); if R(A) <?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }
     Opcode:new(0, 1, OPARGMASK.OpArgR, OPARGMASK.OpArgN, OPMODE.IAsBx, "FORPREP ", Action.forPrep), -- R(A)-=R(A+2); pc+=sBx
     Opcode:new(0, 0, OPARGMASK.OpArgN, OPARGMASK.OpArgU, OPMODE.IABC,  "TFORCALL", nil), -- R(A+3), ... ,R(A+2+C) := R(A)(R(A+1), R(A+2));
     Opcode:new(0, 1, OPARGMASK.OpArgR, OPARGMASK.OpArgN, OPMODE.IAsBx, "TFORLOOP", nil), -- if R(A+1) ~= nil then { R(A)=R(A+1); pc += sBx }
     Opcode:new(0, 0, OPARGMASK.OpArgU, OPARGMASK.OpArgU, OPMODE.IABC,  "SETLIST ", Action.setList), -- R(A)[(C-1)*FPF+i] := R(A+i), 1 <= i <= B
-    Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgN, OPMODE.IABx,  "CLOSURE ", nil), -- R(A) := closure(KPROTO[Bx])
-    Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgN, OPMODE.IABC,  "VARARG  ", nil), -- R(A), R(A+1), ..., R(A+B-2) = vararg
+    Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgN, OPMODE.IABx,  "CLOSURE ", Action.closure), -- R(A) := closure(KPROTO[Bx])
+    Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgN, OPMODE.IABC,  "VARARG  ", Action.vararg), -- R(A), R(A+1), ..., R(A+B-2) = vararg
     Opcode:new(0, 0, OPARGMASK.OpArgU, OPARGMASK.OpArgU, OPMODE.IAx,   "EXTRAARG", nil), -- extra (larger) argument for previous opcode
 }
 

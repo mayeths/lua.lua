@@ -3,8 +3,14 @@ local Util = require("common/util")
 -- NOTE: Index start from 1 in Lua API
 
 local LuaStack = {
+    -- virtual stack
     slots = nil,
     _top = nil,
+    -- call info
+    closure = nil,
+    varargs = nil,
+    pc = nil,
+    prev = nil,
 }
 
 
@@ -16,6 +22,7 @@ function LuaStack:new(capacity)
         self.slots[i] = self.slots
     end
     self._top = 0
+    self.pc = 0
     return self
 end
 
@@ -75,6 +82,15 @@ function LuaStack:push(val)
         self.slots[self._top] = val
     end
 end
+
+
+function LuaStack:pushN(vals, n)
+    if n < 0 then
+        n = #vals
+    end
+    for i = 1, n do
+        self:push(vals[i])
+    end
 end
 
 
@@ -90,6 +106,15 @@ function LuaStack:pop()
     else
         return val
     end
+end
+
+
+function LuaStack:popN(n)
+    local vals = {}
+    for i = n, 1, -1 do
+        vals[i] = self:pop()
+    end
+    return vals
 end
 
 

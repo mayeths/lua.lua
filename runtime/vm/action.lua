@@ -170,6 +170,11 @@ function Action.setList(inst, vm)
     else
         c = (vm:Fetch() >> 6)
     end
+    local b0 = b == 0
+    if b0 then
+        b = vm:ToInteger(-1) - a - 1
+        vm:Pop(1)
+    end
     vm:CheckStack(1)
     local idx = c * 50
     for i = 1, b do
@@ -177,6 +182,57 @@ function Action.setList(inst, vm)
         vm:PushValue(a + i)
         vm:SetI(a, idx)
     end
+    if b0 then
+        for i = vm:RegisterCount() + 1, vm:GetTop() do
+            idx = idx + 1
+            vm:PushValue(i)
+            vm:SetI(a, idx)
+        end
+        vm:SetTop(vm:RegisterCount())
+    end
+end
+
+function Action.self(inst, vm)
+    local a, b, c = inst:ABC()
+    a = a + 1
+    b = b + 1
+    vm:Copy(b, a + 1)
+    vm:GetRK(c)
+    vm:GetTable(b)
+    vm:Replace(a)
+end
+
+function Action.closure(inst, vm)
+    local a, bx = inst:ABx()
+    a = a + 1
+    vm:LoadProto(bx + 1)
+    vm:Replace(a)
+end
+
+function Action.vararg(inst, vm)
+    local a, b, _ = inst:ABC()
+    a = a + 1
+    if b ~= 1 then
+        vm:LoadVararg(b - 1)
+        Action._popResults(a, b, vm)
+    end
+end
+
+function Action.tailCall(inst, vm)
+    local a, b, _ = inst:ABC()
+    a = a + 1
+    local c = 0
+    local nargs = Action._pushFuncAndArgs(a, b, vm)
+    vm:Call(nargs, c - 1)
+    Action._popResults(a, c, vm)
+end
+
+function Action.call(inst, vm)
+    local a, b, c = inst:ABC()
+    a = a + 1
+    local nargs = Action._pushFuncAndArgs(a, b, vm)
+    vm:Call(nargs, c - 1)
+    Action._popResults(a, c, vm)
 end
 
 function Action.add(inst, vm)
@@ -281,6 +337,57 @@ function Action._fb2int(x)
         return x
     else
         return ((x & 7) + 8) << ((x >> 3) - 1)
+    end
+end
+
+function Action._pushFuncAndArgs(a, b, vm)
+    if b > 1 then
+        vm:CheckStack(b)
+        for i = a, a + b - 1 do
+            vm:PushValue(i)
+        end
+        return b - 1
+    else
+        Action._fixStack(a, vm)
+        return vm:GetTop() - vm:RegisterCount() - 1
+    end
+end
+
+function Action._fixStack(a, vm)
+    local x = vm:ToInteger(-1)
+    vm:Pop(1)
+    vm:CheckStack(x - a)
+    for i = a, x - 1 do
+        vm:PushValue(i)
+    end
+    vm:Rotate(vm:RegisterCount() + 1, x - a)
+end
+
+function Action._popResults(a, c, vm)
+    if c == 1 then
+        --
+    elseif c > 1 then
+        for i = a + c - 2, a, -1 do
+            vm:Replace(i)
+        end
+    else
+        vm:CheckStack(1)
+        vm:PushInteger(a)
+    end
+end
+
+function Action._return(inst, vm)
+    local a, b, _ = inst:ABC()
+    a = a + 1
+    if b == 1 then
+        --
+    elseif b > 1 then
+        vm:CheckStack(b - 1)
+        for i = a, a + b - 2 do
+            vm:PushValue(i)
+        end
+    else
+        Action._fixStack(a, vm)
     end
 end
 
