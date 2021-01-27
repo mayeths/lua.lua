@@ -7,7 +7,7 @@ LLUAR = {
 }
 local lluar_arg = Arg:new("lluar", "The runtime of lua.lua", "-",
     {
-        param_name = "binarychunk",
+        param_name = "chunk",
         unmatched_name = "args"
     }, {
         HELP = Arg:boolopt("h", "Print this help"),

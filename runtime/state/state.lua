@@ -1,7 +1,7 @@
 local Stack = require("runtime/state/stack")
 local Closure = require("runtime/state/type/closure")
 local Table = require("runtime/state/type/table")
-local BinaryChunk = require("runtime/binarychunk/binarychunk")
+local Chunk = require("runtime/chunk/chunk")
 local Convert = require("runtime/state/type/convert")
 local Instruction = require("runtime/vm/instruction")
 local VM = require("runtime/vm/vm")
@@ -558,7 +558,7 @@ end
 
 
 function State:Load(chunk, name, mode)
-    local proto = BinaryChunk:Undump(chunk)
+    local proto = Chunk:Undump(chunk)
     local closure = Closure:new(proto)
     self.stack:push(closure)
 end

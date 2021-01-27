@@ -1,4 +1,4 @@
-local BinaryChunk = require("runtime/binarychunk/binarychunk")
+local Chunk = require("runtime/chunk/chunk")
 local Instruction = require("runtime/vm/instruction")
 local OPMODE = require("lua/opmode")
 local OPARGMASK = require("lua/opargmask")
@@ -15,7 +15,7 @@ function LLUAD:main()
     local fd = io.open(arg[1], "rb")
     local data = fd:read("*all")
     fd:close()
-    local proto = BinaryChunk:Undump(data)
+    local proto = Chunk:Undump(data)
     LLUAD:displayProtoInfo(proto, 1)
 end
 

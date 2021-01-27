@@ -1,8 +1,8 @@
-local Header = require("runtime/binarychunk/header")
-local Prototype = require("runtime/binarychunk/prototype")
-local Tag = require("runtime/binarychunk/tag")
-local Locvar = require("runtime/binarychunk/locvar")
-local Upvalue = require("runtime/binarychunk/upvalue")
+local Header = require("runtime/chunk/header")
+local Prototype = require("runtime/chunk/prototype")
+local Tag = require("runtime/chunk/tag")
+local Locvar = require("runtime/chunk/locvar")
+local Upvalue = require("runtime/chunk/upvalue")
 local Util = require("common/util")
 
 
