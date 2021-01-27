@@ -4,6 +4,7 @@ local Table = require("runtime/state/type/table")
 local BinaryChunk = require("runtime/binarychunk/binarychunk")
 local Convert = require("runtime/state/type/convert")
 local Instruction = require("runtime/vm/instruction")
+local VM = require("runtime/vm/vm")
 local OPCODE = require("lua/opcode")
 local OPERATION = require("lua/operation")
 local TYPE = require("lua/type")
@@ -604,7 +605,7 @@ end
 function State:runClosure()
     while true do
         local inst = Instruction:new(self:Fetch())
-        inst:Execute(self)
+        VM.Execute(inst, self)
         self:printStack()
         if inst:Opcode() + 1 == OPCODE.OP_RETURN then
             break
