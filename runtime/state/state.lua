@@ -1,4 +1,4 @@
-local LuaStack = require("runtime/state/luastack")
+local Stack = require("runtime/state/stack")
 local LuaClosure = require("runtime/state/luaclosure")
 local Operation = require("runtime/constrant/operation")
 local BinaryChunk = require("runtime/binarychunk/binarychunk")
@@ -16,7 +16,7 @@ local State = {
 function State:new()
     State.__index = State
     self = setmetatable({}, State)
-    self.stack = LuaStack:new(20)
+    self.stack = Stack:new(20)
     return self
 end
 
@@ -573,7 +573,7 @@ function State:Call(nRealParams, nRealResults)
     local nreg = proto.MaxStackSize
     local nDefinedparams = proto.NumParams
     local isVararg = proto.IsVararg == 1
-    local newStack = LuaStack:new(nreg + 20)
+    local newStack = Stack:new(nreg + 20)
     newStack.closure = closure
     local realParams = self.stack:popN(nRealParams)
     local func = self.stack:pop()

@@ -2,7 +2,7 @@ local Util = require("common/util")
 
 -- NOTE: Index start from 1 in Lua API
 
-local LuaStack = {
+local Stack = {
     -- virtual stack
     slots = nil,
     _top = nil,
@@ -14,9 +14,9 @@ local LuaStack = {
 }
 
 
-function LuaStack:new(capacity)
-    LuaStack.__index = LuaStack
-    self = setmetatable({}, LuaStack)
+function Stack:new(capacity)
+    Stack.__index = Stack
+    self = setmetatable({}, Stack)
     self.slots = {}
     for i = 1, capacity do
         self.slots[i] = self.slots
@@ -27,26 +27,26 @@ function LuaStack:new(capacity)
 end
 
 
-function LuaStack:gettop()
+function Stack:gettop()
     return self._top
 end
 
 
-function LuaStack:settop(n)
+function Stack:settop(n)
     self._top = n
 end
 
 
-function LuaStack:ensure(freenum)
+function Stack:ensure(freenum)
     for i = #self.slots + 1, self._top + freenum do
         self.slots[i] = self.slots
     end
 end
 
 
-function LuaStack:get(idx)
+function Stack:get(idx)
     if not self:isValid(idx) then
-        Util:panic("[LuaStack:get ERROR] Invalid index!")
+        Util:panic("[Stack:get ERROR] Invalid index!")
     end
     local absIdx = self:absIndex(idx)
     local val = self.slots[absIdx]
@@ -58,9 +58,9 @@ function LuaStack:get(idx)
 end
 
 
-function LuaStack:set(idx, val)
+function Stack:set(idx, val)
     if not self:isValid(idx) then
-        Util:panic("[LuaStack:set ERROR] Invalid index!")
+        Util:panic("[Stack:set ERROR] Invalid index!")
     end
     local absIdx = self:absIndex(idx)
     if val == nil then
@@ -71,9 +71,9 @@ function LuaStack:set(idx, val)
 end
 
 
-function LuaStack:push(val)
+function Stack:push(val)
     if self._top == #self.slots then
-        Util:panic("[LuaStack:push ERROR] Stack overflow!")
+        Util:panic("[Stack:push ERROR] Stack overflow!")
     end
     self._top = self._top + 1
     if val == nil then
@@ -84,7 +84,7 @@ function LuaStack:push(val)
 end
 
 
-function LuaStack:pushN(vals, n)
+function Stack:pushN(vals, n)
     if n < 0 then
         n = #vals
     end
@@ -94,9 +94,9 @@ function LuaStack:pushN(vals, n)
 end
 
 
-function LuaStack:pop()
+function Stack:pop()
     if self._top < 1 then
-        Util:panic("[LuaStack:pop ERROR] Stack underflow!")
+        Util:panic("[Stack:pop ERROR] Stack underflow!")
     end
     local val = self.slots[self._top]
     self.slots[self._top] = self.slots
@@ -109,7 +109,7 @@ function LuaStack:pop()
 end
 
 
-function LuaStack:popN(n)
+function Stack:popN(n)
     local vals = {}
     for i = n, 1, -1 do
         vals[i] = self:pop()
@@ -118,7 +118,7 @@ function LuaStack:popN(n)
 end
 
 
-function LuaStack:absIndex(idx)
+function Stack:absIndex(idx)
     if idx < 0 then
         return self._top + idx + 1
     else
@@ -127,13 +127,13 @@ function LuaStack:absIndex(idx)
 end
 
 
-function LuaStack:isValid(idx)
+function Stack:isValid(idx)
     local absIdx = self:absIndex(idx)
     return absIdx >= 1 and absIdx <= self._top
 end
 
 
-function LuaStack:reverse(i, j)
+function Stack:reverse(i, j)
     while i < j do
         local vali, valj = self.slots[i], self.slots[j]
         self.slots[i], self.slots[j] = valj, vali
@@ -142,4 +142,4 @@ function LuaStack:reverse(i, j)
     end
 end
 
-return LuaStack
+return Stack
