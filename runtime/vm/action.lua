@@ -235,6 +235,16 @@ function Action.Call(inst, state)
     Action._popResults(a, c, state)
 end
 
+function Action.GetTabUp(inst, state)
+    local a, _, c = inst:ABC()
+    a = a + 1
+    state:PushGlobalTable()
+    state:GetRK(c)
+    state:GetTable(-2)
+    state:Replace(a)
+    state:Pop(1)
+end
+
 function Action.Add(inst, state)
     Action._binaryArith(inst, state, OPERATION.LUA_OPADD)
 end

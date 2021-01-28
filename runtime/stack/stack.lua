@@ -1,3 +1,4 @@
+local STACK = require("lua/stack")
 local Util = require("common/util")
 
 -- NOTE: Index start from 1 in Lua API
@@ -7,6 +8,7 @@ local Stack = {
     slots = nil,
     _top = nil,
     -- call info
+    state = nil,
     closure = nil,
     varargs = nil,
     pc = nil,
@@ -14,7 +16,7 @@ local Stack = {
 }
 
 
-function Stack:new(capacity)
+function Stack:new(capacity, state)
     Stack.__index = Stack
     self = setmetatable({}, Stack)
     self.slots = {}
@@ -22,6 +24,7 @@ function Stack:new(capacity)
         self.slots[i] = self.slots
     end
     self._top = 0
+    self.state = state
     self.pc = 0
     return self
 end
@@ -45,6 +48,9 @@ end
 
 
 function Stack:get(idx)
+    if idx == STACK.LUA_REGISTRYINDEX then
+        return self.state.registry
+    end
     if not self:isValid(idx) then
         Util:panic("[Stack:get ERROR] Invalid index!")
     end
@@ -59,6 +65,10 @@ end
 
 
 function Stack:set(idx, val)
+    if idx == STACK.LUA_REGISTRYINDEX then
+        self.state.registry = val
+        return
+    end
     if not self:isValid(idx) then
         Util:panic("[Stack:set ERROR] Invalid index!")
     end
@@ -119,15 +129,17 @@ end
 
 
 function Stack:absIndex(idx)
-    if idx < 0 then
-        return self._top + idx + 1
-    else
+    if idx >= 0 or idx <= STACK.LUA_REGISTRYINDEX then
         return idx
     end
+    return self._top + idx + 1
 end
 
 
 function Stack:isValid(idx)
+    if idx == STACK.LUA_REGISTRYINDEX then
+        return true
+    end
     local absIdx = self:absIndex(idx)
     return absIdx >= 1 and absIdx <= self._top
 end

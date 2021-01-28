@@ -1,0 +1,9 @@
+local STACK = {
+    LUA_MINSTACK = 20,
+    LUAI_MAXSTACK = 1000000,
+    LUA_REGISTRYINDEX = - 1000000 - 1000,
+    LUA_RIDX_GLOBALS = 2,
+}
+
+
+return STACK

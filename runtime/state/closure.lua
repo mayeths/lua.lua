@@ -6,13 +6,15 @@
 local Closure = {
     t = "function",
     proto = nil,
+    outerfn = nil
 }
 
 
-function Closure:new(proto)
+function Closure:new(proto, outerfn)
     Closure.__index = Closure
     self = setmetatable({}, Closure)
     self.proto = proto
+    self.outerfn = outerfn
     return self
 end
 

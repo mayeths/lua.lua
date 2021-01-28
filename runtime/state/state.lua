@@ -7,18 +7,22 @@ local Instruction = require("runtime/vm/instruction")
 local VM = require("runtime/vm/vm")
 local OPCODE = require("lua/opcode")
 local OPERATION = require("lua/operation")
+local STACK = require("lua/stack")
 local TYPE = require("lua/type")
 local Util = require("common/util")
 
 local State = {
     stack = nil,
+    registry = nil,
 }
 
 
 function State:new()
     State.__index = State
     self = setmetatable({}, State)
-    self.stack = Stack:new(20)
+    self.registry = Table:new()
+    self.registry[STACK.LUA_RIDX_GLOBALS] = Table:new()
+    self.stack = Stack:new(STACK.LUA_MINSTACK, self)
     return self
 end
 
@@ -498,7 +502,7 @@ end
 
 function State:LoadProto(idx)
     local proto = self.stack.closure.proto.Protos[idx]
-    local closure = Closure:new(proto)
+    local closure = Closure:new(proto, nil)
     self.stack:push(closure)
 end
 
@@ -516,22 +520,25 @@ end
 function State:GetTable(idx)
     local t = self.stack:get(idx)
     local k = self.stack:pop()
-    self.stack:push(t.table[k])
-    return type(t.table[k])
+    local val = t.table[k]
+    self.stack:push(val)
+    return type(val)
 end
 
 
 function State:GetFeild(idx, k)
     local t = self.stack:get(idx)
-    self.stack:push(t.table[k])
-    return type(t.table[k])
+    local val = t.table[k]
+    self.stack:push(val)
+    return type(val)
 end
 
 
 function State:GetI(idx, i)
     local t = self.stack:get(idx)
-    self.stack:push(t.table[i])
-    return type(t.table[i])
+    local val = t.table[i]
+    self.stack:push(val)
+    return type(val)
 end
 
 
@@ -559,81 +566,123 @@ end
 
 function State:Load(chunk, name, mode)
     local proto = Chunk:Undump(chunk)
-    local closure = Closure:new(proto)
+    local closure = Closure:new(proto, nil)
     self.stack:push(closure)
 end
 
 
-function State:Call(nRealParams, nRealResults)
-    local idx = - (nRealParams + 1)
-    if self:Type(idx) ~= TYPE.LUA_TFUNCTION then
+function State:Call(nProvidedParams, nRequestedResults)
+    local providedParams = self.stack:popN(nProvidedParams)
+    local closure = self.stack:pop()
+    if type(closure) ~= "table" or closure.t ~= "function" then
         Util:panic("[State:Call ERROR] not a function")
     end
-    local closure = self.stack:get(idx)
-    local proto = closure.proto
-    Util:printf("calling %s<%d,%d>\n", proto.Source,
-        proto.LineDefined, proto.LastLineDefined)
-    local nreg = proto.MaxStackSize
-    local nDefinedparams = proto.NumParams
-    local isVararg = proto.IsVararg == 1
-    local newStack = Stack:new(nreg + 20)
+
+    local nReg = STACK.LUA_MINSTACK
+    local nActualParams = 0
+
+    if closure.proto then
+        nReg = closure.proto.MaxStackSize
+        nActualParams = closure.proto.NumParams
+    else
+        nReg = nProvidedParams
+        nActualParams = nProvidedParams
+    end
+
+    local newStack = Stack:new(nReg + STACK.LUA_MINSTACK)
     newStack.closure = closure
-    local realParams = self.stack:popN(nRealParams)
-    local func = self.stack:pop()
-    newStack:pushN(realParams, nDefinedparams)
-    newStack:settop(nreg)
-    if nRealParams >= nDefinedparams and isVararg then
-        local varargParams = {}
-        for i = nDefinedparams + 1, #realParams do
-            varargParams[#varargParams + 1] = realParams[i]
+    newStack:pushN(providedParams, nActualParams)
+
+    newStack.prev = self.stack
+    self.stack = newStack
+
+    local nActualResults
+    if closure.proto then
+        newStack:settop(nReg)
+        if closure.proto.IsVararg == 1 and nProvidedParams >= nActualParams then
+            newStack.varargs = {}
+            for i = nActualParams + 1, nProvidedParams do
+                newStack.varargs[#newStack.varargs + 1] = providedParams[i]
+            end
         end
-        newStack.varargs = varargParams
-    end
-
-    self:pushLuaStack(newStack)
-    self:runClosure()
-    self:popLuaStack()
-
-    if nRealResults ~= 0 then
-        local result = newStack:popN(newStack:gettop() - nreg)
-        self.stack:ensure(#result)
-        self.stack:pushN(result, nRealResults)
-    end
-end
-
-
-function State:runClosure()
-    while true do
-        local inst = Instruction:new(self:Fetch())
-        VM.Execute(inst, self)
-        self:printStack()
-        if inst:Opcode() + 1 == OPCODE.OP_RETURN then
-            break
+        while true do
+            local inst = Instruction:new(self:Fetch())
+            VM.Execute(inst, self)
+            if inst:Opcode() + 1 == OPCODE.OP_RETURN then
+                break
+            end
         end
+        nActualResults = newStack:gettop() - nReg
+    else
+        nActualResults = closure.outerfn(self)
     end
+
+    local usedStack = self.stack
+    self.stack = usedStack.prev
+    usedStack.prev = nil
+
+    if nRequestedResults ~= 0 then
+        local actualResults = newStack:popN(nActualResults)
+        self.stack:ensure(#actualResults)
+        self.stack:pushN(actualResults, nRequestedResults)
+    end
+
 end
 
 
-
-
-
-
-
-
-function State:pushLuaStack(stack)
-    stack.prev = self.stack
-    self.stack = stack
+function State:IsOuterFunction(idx)
+    local val = self.stack:get(idx)
+    if type(val) == "table" and val.outerfn then
+        return true
+    end
+    return false
 end
 
 
-function State:popLuaStack()
-    local stack = self.stack
-    self.stack = stack.prev
-    stack.prev = nil
+function State:ToOuterFunction(idx)
+    local val = self.stack:get(idx)
+    if type(val) == "table" and val.outerfn then
+        return val.outerfn
+    end
+    return nil
 end
 
 
-function State:printStack()
+function State:GetGlobal(name)
+    local t = self.registry:get(STACK.LUA_RIDX_GLOBALS)
+    local val = t.table[name]
+    self.stack:push(val)
+    return type(val)
+end
+
+
+function State:PushOuterFunction(outerfn)
+    local closure = Closure:new(nil, outerfn)
+    self.stack:push(closure)
+end
+
+
+function State:PushGlobalTable()
+    local glb = self.registry[STACK.LUA_RIDX_GLOBALS]
+    self.stack:push(glb)
+end
+
+
+function State:SetGlobal(name)
+    local t = self.registry[STACK.LUA_RIDX_GLOBALS]
+    local v = self.stack:pop()
+    t.table[name] = v
+end
+
+
+function State:Register(name, outerfn)
+    self:PushOuterFunction(outerfn)
+    self:SetGlobal(name)
+end
+
+
+function State:_printStack(name)
+    Util:printf(tostring(name))
     local top = self:GetTop()
     for i = 1, top do
         local t = self:Type(i)
