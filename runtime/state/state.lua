@@ -21,7 +21,7 @@ function State:new()
     State.__index = State
     self = setmetatable({}, State)
     self.registry = Table:new()
-    self.registry[STACK.LUA_RIDX_GLOBALS] = Table:new()
+    self.registry.table[STACK.LUA_RIDX_GLOBALS] = Table:new()
     self.stack = Stack:new(STACK.LUA_MINSTACK, self)
     return self
 end
@@ -649,7 +649,7 @@ end
 
 
 function State:GetGlobal(name)
-    local t = self.registry:get(STACK.LUA_RIDX_GLOBALS)
+    local t = self.registry.table[STACK.LUA_RIDX_GLOBALS]
     local val = t.table[name]
     self.stack:push(val)
     return type(val)
@@ -663,13 +663,13 @@ end
 
 
 function State:PushGlobalTable()
-    local glb = self.registry[STACK.LUA_RIDX_GLOBALS]
-    self.stack:push(glb)
+    local t = self.registry.table[STACK.LUA_RIDX_GLOBALS]
+    self.stack:push(t)
 end
 
 
 function State:SetGlobal(name)
-    local t = self.registry[STACK.LUA_RIDX_GLOBALS]
+    local t = self.registry.table[STACK.LUA_RIDX_GLOBALS]
     local v = self.stack:pop()
     t.table[name] = v
 end
