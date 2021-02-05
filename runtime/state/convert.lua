@@ -12,7 +12,7 @@ end
 function Convert:any2float(val)
     local t = type(val)
     if t == "number" then
-        return t + 0.0, true
+        return val + 0.0, true
     elseif t == "string" then
         return Convert:str2float(val)
     else
