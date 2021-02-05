@@ -34,11 +34,11 @@ local Opcodes = {
     Opcode:new(0, 1, OPARGMASK.OpArgN, OPARGMASK.OpArgN, OPMODE.IABx,  "LOADKX  ", Action.LoadKx), -- R(A) := Kst(extra arg)
     Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgU, OPMODE.IABC,  "LOADBOOL", Action.LoadBool), -- R(A) := (bool)B; if (C) pc++
     Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgN, OPMODE.IABC,  "LOADNIL ", Action.LoadNil), -- R(A), R(A+1), ..., R(A+B) := nil
-    Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgN, OPMODE.IABC,  "GETUPVAL", nil), -- R(A) := UpValue[B]
+    Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgN, OPMODE.IABC,  "GETUPVAL", Action.GetUpval), -- R(A) := UpValue[B]
     Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgK, OPMODE.IABC,  "GETTABUP", Action.GetTabUp), -- R(A) := UpValue[B][RK(C)]
     Opcode:new(0, 1, OPARGMASK.OpArgR, OPARGMASK.OpArgK, OPMODE.IABC,  "GETTABLE", Action.GetTable), -- R(A) := R(B)[RK(C)]
-    Opcode:new(0, 0, OPARGMASK.OpArgK, OPARGMASK.OpArgK, OPMODE.IABC,  "SETTABUP", nil), -- UpValue[A][RK(B)] := RK(C)
-    Opcode:new(0, 0, OPARGMASK.OpArgU, OPARGMASK.OpArgN, OPMODE.IABC,  "SETUPVAL", nil), -- UpValue[B] := R(A)
+    Opcode:new(0, 0, OPARGMASK.OpArgK, OPARGMASK.OpArgK, OPMODE.IABC,  "SETTABUP", Action.SetTabUp), -- UpValue[A][RK(B)] := RK(C)
+    Opcode:new(0, 0, OPARGMASK.OpArgU, OPARGMASK.OpArgN, OPMODE.IABC,  "SETUPVAL", Action.SetUpval), -- UpValue[B] := R(A)
     Opcode:new(0, 0, OPARGMASK.OpArgK, OPARGMASK.OpArgK, OPMODE.IABC,  "SETTABLE", Action.SetTable), -- R(A)[RK(B)] := RK(C)
     Opcode:new(0, 1, OPARGMASK.OpArgU, OPARGMASK.OpArgU, OPMODE.IABC,  "NEWTABLE", Action.NewTable), -- R(A) := {} (size = B,C)
     Opcode:new(0, 1, OPARGMASK.OpArgR, OPARGMASK.OpArgK, OPMODE.IABC,  "SELF    ", Action.Self), -- R(A+1) := R(B); R(A) := R(B)[RK(C)]

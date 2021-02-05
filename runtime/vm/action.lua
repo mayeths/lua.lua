@@ -1,5 +1,6 @@
 local OPERATION = require("lua/operation")
 local TYPE = require("lua/type")
+local STACK = require("lua/stack")
 local Util = require("common/util")
 
 local Action = {}
@@ -85,6 +86,7 @@ function Action.Jmp(inst, state)
     local a, sBx = inst:AsBx()
     state:AddPC(sBx)
     if a ~= 0 then
+        state:CloseUpvalues(a)
         Util:panic("todo: jmp!")
     end
 end
@@ -236,13 +238,36 @@ function Action.Call(inst, state)
 end
 
 function Action.GetTabUp(inst, state)
-    local a, _, c = inst:ABC()
+    local a, b, c = inst:ABC()
     a = a + 1
-    state:PushGlobalTable()
+    b = b + 1
     state:GetRK(c)
-    state:GetTable(-2)
+    state:GetTable(STACK.LUA_REGISTRYINDEX - b)
     state:Replace(a)
-    state:Pop(1)
+end
+
+function Action.SetTabUp(inst, state)
+    local a, b, c = inst:ABC()
+    a = a + 1
+    state:GetRK(b)
+    state:GetRK(c)
+    state:SetTable(STACK.LUA_REGISTRYINDEX - a)
+end
+
+
+function Action.GetUpval(inst, state)
+    local a, b, _ = inst:ABC()
+    a = a + 1
+    b = b + 1
+    state:Copy(STACK.LUA_REGISTRYINDEX - b, a)
+end
+
+
+function Action.SetUpval(inst, state)
+    local a, b, _ = inst:ABC()
+    a = a + 1
+    b = b + 1
+    state:Copy(a, STACK.LUA_REGISTRYINDEX - b)
 end
 
 function Action.Add(inst, state)
@@ -351,7 +376,7 @@ function Action._fb2int(x)
 end
 
 function Action._pushFuncAndArgs(a, b, state)
-    if b > 1 then
+    if b >= 1 then
         state:CheckStack(b)
         for i = a, a + b - 1 do
             state:PushValue(i)

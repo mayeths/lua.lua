@@ -23,6 +23,9 @@ end
 function LLUA.print(state)
     local nargs = state:GetTop()
     for i = 1, nargs do
+        if i ~= 1 then
+            Util:printf("\t")
+        end
         local t = state:Type(i)
         if t == TYPE.LUA_TBOOLEAN then
             Util:printf(tostring(state:ToBoolean(i)))

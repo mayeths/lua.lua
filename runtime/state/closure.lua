@@ -5,17 +5,31 @@
 
 local Closure = {
     t = "function",
+    upvalues = nil,
+    uvnum = nil,
     proto = nil,
     outerfn = nil
 }
 
 
-function Closure:new(proto, outerfn)
+function Closure:new(proto, outerfn, uvnum)
     Closure.__index = Closure
     self = setmetatable({}, Closure)
     self.proto = proto
     self.outerfn = outerfn
+    self.upvalues = {}
+    self.uvnum = uvnum
     return self
+end
+
+
+function Closure:createUpvalue(i, stack, stkidx)
+    self.upvalues[i] = { stk = stack, idx = stkidx }
+end
+
+
+function Closure:holdUpvalue(i, v)
+    self.upvalues[i] = { val = v, idx = 0 }
 end
 
 

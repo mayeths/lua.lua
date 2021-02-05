@@ -502,8 +502,36 @@ end
 
 function State:LoadProto(idx)
     local proto = self.stack.closure.proto.Protos[idx]
-    local closure = Closure:new(proto, nil)
+    local closure = Closure:new(proto, nil, #proto.Upvalues)
     self.stack:push(closure)
+
+    for i, uvinfo in ipairs(proto.Upvalues) do
+        local uvidx = uvinfo.Idx
+        if uvinfo.Instack == 1 then
+            local value = self.stack.openuvs[uvidx + 1]
+            if value then
+                closure:holdUpvalue(i, value)
+            else
+                closure:createUpvalue(i, self.stack, uvidx)
+                self.stack.openuvs[uvidx + 1] = closure.upvalues[i]
+            end
+        else
+            local value = self.stack.closure.upvalues[uvidx + 1]
+            closure.upvalues[i] = value
+        end
+    end
+end
+
+
+function State:CloseUpvalues(a)
+    for i = 1, #self.stack.openuvs do
+        local uv = self.stack.openuvs[i]
+        if uv.idx >= a and uv.stack then
+            uv.val = uv.stk:get(uv.idx + 1)
+            uv.stk = nil
+            table.remove(self.stack.openuvs, i)
+        end
+    end
 end
 
 
@@ -566,8 +594,12 @@ end
 
 function State:Load(chunk, name, mode)
     local proto = Chunk:Undump(chunk)
-    local closure = Closure:new(proto, nil)
+    local closure = Closure:new(proto, nil, #proto.Upvalues)
     self.stack:push(closure)
+    if #proto.Upvalues > 0 then
+        local env = self.registry.table[STACK.LUA_RIDX_GLOBALS]
+        closure:holdUpvalue(1, env)
+    end
 end
 
 
@@ -657,10 +689,19 @@ end
 
 
 function State:PushOuterFunction(outerfn)
-    local closure = Closure:new(nil, outerfn)
+    local closure = Closure:new(nil, outerfn, 0)
     self.stack:push(closure)
 end
 
+
+function State:PushOuterClosure(outerfn, n)
+    local closure = Closure:new(nil, outerfn, n)
+    for i = n, 1, -1 do
+        local val = self.stack:pop()
+        closure:holdUpvalue(i, val)
+    end
+    self.stack:push(closure)
+end
 
 function State:PushGlobalTable()
     local t = self.registry.table[STACK.LUA_RIDX_GLOBALS]
@@ -681,8 +722,10 @@ function State:Register(name, outerfn)
 end
 
 
-function State:_printStack(name)
-    Util:printf(tostring(name))
+function State:_printStack(prefix)
+    if prefix ~= nil then
+        Util:printf(tostring(prefix))
+    end
     local top = self:GetTop()
     for i = 1, top do
         local t = self:Type(i)
