@@ -26,13 +26,11 @@ end
 
 function IT_SHOULD(name, body)
     for _, setup in ipairs(__LEST_SETUPS__) do
-        local status, err = pcall(setup)
-        __LEST_CHECK_PCALL__(status, err)
+        xpcall(setup, __LEST_CHECK_PCALL__)
     end
     __LEST_HANDLE_SCOPE__("It should", name, body)
     for _, teardown in ipairs(__LEST_TEARDOWNS__) do
-        local status, err = pcall(teardown)
-        __LEST_CHECK_PCALL__(status, err)
+        xpcall(teardown, __LEST_CHECK_PCALL__)
     end
 end
 
@@ -57,22 +55,26 @@ function __LEST_HANDLE_SCOPE__(scope, name, body)
     )
 
     __LEST_SCOPE_DEPTH__ = __LEST_SCOPE_DEPTH__ + 1
-    local status, err = pcall(body)
+    xpcall(body, __LEST_CHECK_PCALL__)
     __LEST_SCOPE_DEPTH__ = __LEST_SCOPE_DEPTH__ - 1
 
-    __LEST_CHECK_PCALL__(status, err)
 end
 
 
-function __LEST_CHECK_PCALL__(status, err)
-    if status == true then
-        return
-    end
+function __LEST_CHECK_PCALL__(err)
     Util:println(Color:red("ERROR ")..err)
     local idx1, idx2 = string.find(err, ":%d+:")
     local fname = string.sub(err, 1, idx1 - 1)
     local lineno = string.sub(err, idx1 + 1, idx2 - 1)
     __LEST_PRINT_SOURCE__(fname, lineno)
+    local trace = debug.traceback(nil, 2)
+    for line in trace:gmatch("[^\n]+") do
+        local stop = string.find(line, "in function 'xpcall'")
+        if stop then
+            break
+        end
+        Util:println(line)
+    end
     os.exit(1)
 end
 
