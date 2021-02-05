@@ -14,8 +14,7 @@ end
 
 function Util:panic(fmt, ...)
     local msg = string.format(fmt.."\n", ...)
-    io.stderr:write(msg)
-    os.exit(1)
+    error(msg, 0)
 end
 
 
