@@ -1,7 +1,7 @@
+require("unittest/lest")
 local STACK = require("lua/stack")
 local OPERATION = require("lua/operation")
 local State = require("runtime/state/state")
-require("unittest/lest")
 
 SCENARIO("Testing runtime/state/state basic function", function ()
 
@@ -245,6 +245,30 @@ SCENARIO("Testing runtime/state/state basic function", function ()
 
             EXPECT(state:GetTop()).TOEQUAL(20)
 
+        end)
+
+
+        IT_SHOULD("Compare() correctly", function ()
+            state:PushBoolean(true)
+            state:PushBoolean(false)
+            state:PushInteger(123)
+            state:PushInteger(456)
+            state:PushString("hello")
+            state:PushString("world")
+            EXPECT(state:Compare(1, 2, OPERATION.LUA_OPEQ)).TOEQUAL(false)
+            EXPECT(function()
+                state:Compare(1, 2, OPERATION.LUA_OPLE)
+            end).TOTHROW()
+            EXPECT(function()
+                state:Compare(1, 2, OPERATION.LUA_OPLT)
+            end).TOTHROW()
+            EXPECT(state:Compare(3, 4, OPERATION.LUA_OPEQ)).TOEQUAL(false)
+            EXPECT(state:Compare(3, 4, OPERATION.LUA_OPLE)).TOEQUAL(true)
+            EXPECT(state:Compare(3, 4, OPERATION.LUA_OPLT)).TOEQUAL(true)
+            EXPECT(state:Compare(5, 6, OPERATION.LUA_OPEQ)).TOEQUAL(false)
+            EXPECT(state:Compare(5, 6, OPERATION.LUA_OPLE)).TOEQUAL(true)
+            EXPECT(state:Compare(5, 6, OPERATION.LUA_OPLT)).TOEQUAL(true)
+            EXPECT(state:Compare(1, 6, OPERATION.LUA_OPEQ)).TOEQUAL(false)
         end)
 
 
