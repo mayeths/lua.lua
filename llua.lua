@@ -1,6 +1,7 @@
 local TYPE = require("lua/type")
 local State = require("runtime/state/state")
 local Util = require("common/util")
+local Throw = require("common/throw")
 
 
 LLUA = {}
@@ -8,7 +9,7 @@ LLUA = {}
 
 function LLUA:main()
     if #arg < 1 then
-        Util:panic("[LLUA ERROR] Running LLUA require a bytecode file")
+        Throw:error("[LLUA ERROR] Running LLUA require a bytecode file")
     end
     local fd = io.open(arg[1], "rb")
     local data = fd:read("*all")

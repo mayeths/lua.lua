@@ -1,5 +1,6 @@
 local Opcodes = require("runtime/vm/opcodes")
 local Util = require("common/util")
+local Throw = require("common/throw")
 
 local VM = {}
 
@@ -9,7 +10,7 @@ function VM.Execute(inst, state)
     if action ~= nil then
         action(inst, state)
     else
-        Util:panic(inst:OpName().." is not implemented.")
+        Throw:error(inst:OpName().." is not implemented.")
     end
 end
 

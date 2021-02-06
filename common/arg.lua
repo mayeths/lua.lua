@@ -1,4 +1,5 @@
 local Util = require("common/util")
+local Throw = require("common/throw")
 local Arg = {
     name = nil,
     desc = nil,
@@ -35,7 +36,7 @@ end
 
 function Arg:parse(cmdarg)
     if type(cmdarg) ~= "table" then
-        Util:panic("Not valid cmdarg")
+        Throw:error("Not valid cmdarg")
     end
     for key, opt in pairs(self.schemas) do
         self[key] = opt.defaultValue
@@ -77,7 +78,7 @@ function Arg:parse(cmdarg)
                         table.remove(remainingIdx, i + 1)
                         i = i + 2
                     else
-                        Util:panic("Unknown option type"..type(opt.typ))
+                        Throw:error("Unknown option type"..type(opt.typ))
                     end
                 end
             end
@@ -161,11 +162,11 @@ function Option:new(name, desc, typ, defaultValue, enumValues)
     self.desc = desc
     self.typ = typ
     if typ == "string" and type(defaultValue) ~= "string" then
-        Util:panic("Not a valid default string value")
+        Throw:error("Not a valid default string value")
     elseif typ == "number" and type(defaultValue) ~= "number" then
-        Util:panic("Not a valid default number value")
+        Throw:error("Not a valid default number value")
     elseif typ == "enum" and type(enumValues) ~= "table" then
-        Util:panic("Not valid enum values")
+        Throw:error("Not valid enum values")
     end
     self.defaultValue = defaultValue
     self.enumValues = enumValues
@@ -175,7 +176,7 @@ end
 
 function Option:isValidEnumVal(a)
     if type(self.enumValues) ~= "table" then
-        Util:panic("Not valid enumValues")
+        Throw:error("Not valid enumValues")
     end
     for i = 1, #self.enumValues do
         if a == self.enumValues[i] then

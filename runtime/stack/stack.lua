@@ -1,5 +1,6 @@
 local STACK = require("lua/stack")
 local Util = require("common/util")
+local Throw = require("common/throw")
 
 -- NOTE: Index start from 1 in Lua API
 
@@ -66,7 +67,7 @@ function Stack:get(idx)
         return self.state.registry
     end
     if not self:isValid(idx) then
-        Util:panic("[Stack:get ERROR] Invalid index!")
+        Throw:error("[Stack:get ERROR] Invalid index!")
     end
     local absIdx = self:absIndex(idx)
     local val = self.slots[absIdx]
@@ -97,7 +98,7 @@ function Stack:set(idx, val)
         return
     end
     if not self:isValid(idx) then
-        Util:panic("[Stack:set ERROR] Invalid index! (%d)", idx)
+        Throw:error("[Stack:set ERROR] Invalid index! (%d)", idx)
     end
     local absIdx = self:absIndex(idx)
     if val == nil then
@@ -110,7 +111,7 @@ end
 
 function Stack:push(val)
     if self._top == #self.slots then
-        Util:panic("[Stack:push ERROR] Stack overflow!")
+        Throw:error("[Stack:push ERROR] Stack overflow!")
     end
     self._top = self._top + 1
     if val == nil then
@@ -133,7 +134,7 @@ end
 
 function Stack:pop()
     if self._top < 1 then
-        Util:panic("[Stack:pop ERROR] Stack underflow!")
+        Throw:error("[Stack:pop ERROR] Stack underflow!")
     end
     local val = self.slots[self._top]
     self.slots[self._top] = self.slots

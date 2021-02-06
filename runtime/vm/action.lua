@@ -2,6 +2,7 @@ local OPERATION = require("lua/operation")
 local TYPE = require("lua/type")
 local STACK = require("lua/stack")
 local Util = require("common/util")
+local Throw = require("common/throw")
 
 local Action = {}
 
@@ -87,7 +88,7 @@ function Action.Jmp(inst, state)
     state:AddPC(sBx)
     if a ~= 0 then
         state:CloseUpvalues(a)
-        Util:panic("todo: jmp!")
+        Throw:error("todo: jmp!")
     end
 end
 

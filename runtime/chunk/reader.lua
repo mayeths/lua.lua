@@ -148,7 +148,7 @@ function Reader:readConstant()
     elseif constType == Tag.SHORT_STR or constType == Tag.LONG_STR then
         return self:readString()
     else
-        Util:panic("[Reader:readConstant ERROR] corrupted!")
+        Throw:error("[Reader:readConstant ERROR] corrupted!")
     end
 end
 

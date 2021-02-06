@@ -99,7 +99,7 @@ end
 function State:SetTop(idx)
     local newTop = self:AbsIndex(idx)
     if newTop < 0 then
-        Util:panic("[State:SetTop ERROR] Stack underflow!")
+        Throw:error("[State:SetTop ERROR] Stack underflow!")
     end
     local operateSlotNum = newTop - self:GetTop()
     if operateSlotNum < 0 then
@@ -179,7 +179,7 @@ function State:Arith(opid)
             self.stack:push(result)
             return
         end
-        Util:panic("[State:Arith ERROR] Can not perform bitwise op!")
+        Throw:error("[State:Arith ERROR] Can not perform bitwise op!")
     else
         if tryIntFnFirst then
             local x, ok1 = Convert:any2int(a)
@@ -197,7 +197,7 @@ function State:Arith(opid)
             self.stack:push(result)
             return
         end
-        Util:panic("[State:Arith ERROR] Can not perform any op!")
+        Throw:error("[State:Arith ERROR] Can not perform any op!")
     end
 end
 
@@ -263,7 +263,7 @@ function State:Concat(n)
             self.stack:pop()
             self.stack:push(s1..s2)
         else
-            Util:panic("[State:Concat ERROR] Concatenation error!")
+            Throw:error("[State:Concat ERROR] Concatenation error!")
         end
     end
 end
@@ -343,10 +343,10 @@ function State:Type(idx)
         elseif val.t == "function" then
             return TYPE.LUA_TFUNCTION
         else
-            Util:panic("[State:Type ERROR] Unknown type wrapper!")
+            Throw:error("[State:Type ERROR] Unknown type wrapper!")
         end
     else
-        Util:panic("[State:Type ERROR] Unknown type!")
+        Throw:error("[State:Type ERROR] Unknown type!")
     end
 end
 
@@ -624,7 +624,7 @@ function State:Call(nProvidedParams, nRequestedResults)
     local providedParams = self.stack:popN(nProvidedParams)
     local closure = self.stack:pop()
     if type(closure) ~= "table" or closure.t ~= "function" then
-        Util:panic("[State:Call ERROR] not a function")
+        Throw:error("[State:Call ERROR] not a function")
     end
 
     local nReg = STACK.LUA_MINSTACK

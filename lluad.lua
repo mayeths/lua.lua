@@ -3,6 +3,7 @@ local Instruction = require("runtime/vm/instruction")
 local OPMODE = require("lua/opmode")
 local OPARGMASK = require("lua/opargmask")
 local Util = require("common/util")
+local Throw = require("common/throw")
 
 
 LLUAD = {}
@@ -10,7 +11,7 @@ LLUAD = {}
 
 function LLUAD:main()
     if #arg < 1 then
-        Util:panic("[LLUAD ERROR] Running LLUAD require a bytecode file")
+        Throw:error("[LLUAD ERROR] Running LLUAD require a bytecode file")
     end
     local fd = io.open(arg[1], "rb")
     local data = fd:read("*all")

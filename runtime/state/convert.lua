@@ -1,4 +1,5 @@
 local Util = require("common/util")
+local Throw = require("common/throw")
 local Convert = {}
 
 -- Return the converted value and convert result
@@ -46,7 +47,7 @@ function Convert:any2str(val)
             return "function: "..tostring(val.proto):sub(8)
         end
         -- TODO: convert the custom type to string
-        Util:panic("[Convert:any2str ERROR] unsupported convert")
+        Throw:error("[Convert:any2str ERROR] unsupported convert")
     end
 end
 
