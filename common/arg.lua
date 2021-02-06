@@ -68,7 +68,7 @@ function Arg:parse(cmdarg)
                         i = i + 2
                     elseif opt.typ == "enum" then
                         if not opt:isValidEnumVal(cmdarg[i + 1]) then
-                            Util:throwError(
+                            Throw:error(
                                 "Expect valid %s%s argument (valid: %s, default %s)",
                                 self.prefix, opt.name,
                                 table.concat(opt.enumValues, " "), opt.defaultValue
