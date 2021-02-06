@@ -2,8 +2,10 @@ local Util = {}
 
 
 function Util:printf(fmt, ...)
-    local msg = string.format(fmt, ...)
-    io.stdout:write(msg)
+    if #{...} ~= 0 then
+        fmt = string.format(fmt, ...)
+    end
+    io.stdout:write(fmt)
 end
 
 
