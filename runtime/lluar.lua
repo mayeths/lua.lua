@@ -1,4 +1,4 @@
-local Util = require("common/util")
+local Fmt = require("common/fmt")
 local Arg = require("common/arg")
 LLUAR = {
     NAME = "Lua.lua runtime",
@@ -25,15 +25,15 @@ local lluar_arg = Arg:new("lluar", "The runtime of lua.lua", "-",
 function LLUAR:main()
     lluar_arg:parse(arg)
     if lluar_arg.HELP == true then
-        Util:println(lluar_arg:tostring())
+        Fmt:println(lluar_arg:tostring())
         return
     elseif lluar_arg.VERSION == true then
-        Util:println(LLUAR.VERSION)
+        Fmt:println(LLUAR.VERSION)
         return
     elseif lluar_arg.FULLVERSION == true then
         local arr = { LLUAR.NAME, LLUAR.VERSION, LLUAR.INFO }
         local msg = table.concat(arr, " ")
-        Util:println(msg)
+        Fmt:println(msg)
         return
     end
 end

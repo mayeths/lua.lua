@@ -1,5 +1,4 @@
 local Opcodes = require("runtime/vm/opcodes")
-local Util = require("common/util")
 
 local Instruction = {
     value = nil,

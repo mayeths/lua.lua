@@ -1,6 +1,6 @@
 local TYPE = require("lua/type")
 local State = require("runtime/state/state")
-local Util = require("common/util")
+local Fmt = require("common/fmt")
 local Throw = require("common/throw")
 
 
@@ -25,26 +25,26 @@ function LLUA.print(state)
     local nargs = state:GetTop()
     for i = 1, nargs do
         if i ~= 1 then
-            Util:printf("\t")
+            Fmt:printf("\t")
         end
         local t = state:Type(i)
         if t == TYPE.LUA_TBOOLEAN then
-            Util:printf(tostring(state:ToBoolean(i)))
+            Fmt:printf(tostring(state:ToBoolean(i)))
         elseif t == TYPE.LUA_TNUMBER then
             if state:IsInteger(i) then
-                Util:printf(tostring(state:ToInteger(i)))
+                Fmt:printf(tostring(state:ToInteger(i)))
             else
-                Util:printf(tostring(state:ToNumber(i)))
+                Fmt:printf(tostring(state:ToNumber(i)))
             end
         elseif t == TYPE.LUA_TNIL then
-            Util:printf("nil")
+            Fmt:printf("nil")
         elseif t == TYPE.LUA_TSTRING then
-            Util:printf("%s", state:ToString(i))
+            Fmt:printf("%s", state:ToString(i))
         else
-            Util:printf("%s: %s", state:TypeName(t), t)
+            Fmt:printf("%s: %s", state:TypeName(t), t)
         end
     end
-    Util:printf("\n")
+    Fmt:printf("\n")
     return 0
 end
 

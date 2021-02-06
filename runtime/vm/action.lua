@@ -1,7 +1,6 @@
 local OPERATION = require("lua/operation")
 local TYPE = require("lua/type")
 local STACK = require("lua/stack")
-local Util = require("common/util")
 local Throw = require("common/throw")
 
 local Action = {}

@@ -1,4 +1,3 @@
-local Util = require("common/util")
 local Throw = require("common/throw")
 local Convert = {}
 

@@ -1,5 +1,5 @@
 local Color = require("common/color")
-local Util = require("common/util")
+local Fmt = require("common/fmt")
 local Throw = require("common/throw")
 
 
@@ -65,7 +65,7 @@ end
 
 function Lest.HandleScope(scope, name, body)
     Lest.scopeDepth = Lest.scopeDepth or 0
-    Util:println(
+    Fmt:println(
         string.rep(" ", Lest.scopeDepth * 4)..
         scope.." "..name
     )
@@ -78,7 +78,7 @@ end
 
 
 function Lest.CheckPcall(err)
-    Util:println(Color:red("ERROR: ")..err)
+    Fmt:println(Color:red("ERROR: ")..err)
     local idx1, idx2 = string.find(err, ":%d+:")
     local fname = string.sub(err, 1, idx1 - 1)
     local lineno = string.sub(err, idx1 + 1, idx2 - 1)
@@ -95,7 +95,7 @@ function Lest.ConfirmExpect(gotval, expectval, connectword)
     local info = debug.getinfo(3, "nlS")
     local fname = info.short_src
     local lineno = info.currentline
-    Util:println(
+    Fmt:println(
         Color:red("ERROR: ")..
         fname..":"..tostring(lineno)..":"..
         " expecting "..tostring(gotval)..
@@ -127,9 +127,9 @@ function Lest.PrintSource(fname, lineno)
         local curr = tostring(reallineno)
         local pad = string.rep(" ", maxwidth - #curr)
         if i == range + 1 then
-            Util:println("-> "..curr..pad.." |"..buf[i])
+            Fmt:println("-> "..curr..pad.." |"..buf[i])
         else
-            Util:println("   "..curr..pad.." |"..buf[i])
+            Fmt:println("   "..curr..pad.." |"..buf[i])
         end
     end
 end
@@ -138,7 +138,7 @@ end
 function Lest.PrintTraceback(fname)
     local trace = debug.traceback(nil, 3)
     trace = string.gsub(trace, "^stack traceback:\n", "", 1)
-    Util:println(Color:red("TRACEBACK:"))
+    Fmt:println(Color:red("TRACEBACK:"))
     for line in string.gmatch(trace, "[^\n]+") do
         local istargetline = string.find(line, fname)
         if istargetline then
@@ -148,7 +148,7 @@ function Lest.PrintTraceback(fname)
         if stop then
             break
         end
-        Util:println(line)
+        Fmt:println(line)
     end
 end
 

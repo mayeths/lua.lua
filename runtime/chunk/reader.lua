@@ -3,7 +3,6 @@ local Prototype = require("runtime/chunk/prototype")
 local Tag = require("runtime/chunk/tag")
 local Locvar = require("runtime/chunk/locvar")
 local Upvalue = require("runtime/chunk/upvalue")
-local Util = require("common/util")
 local Throw = require("common/throw")
 
 

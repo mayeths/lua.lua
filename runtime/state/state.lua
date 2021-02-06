@@ -9,7 +9,7 @@ local OPCODE = require("lua/opcode")
 local OPERATION = require("lua/operation")
 local STACK = require("lua/stack")
 local TYPE = require("lua/type")
-local Util = require("common/util")
+local Fmt = require("common/fmt")
 local Throw = require("common/throw")
 
 local State = {
@@ -741,28 +741,28 @@ end
 
 function State:_printStack(prefix)
     if prefix ~= nil then
-        Util:printf(tostring(prefix))
+        Fmt:printf(tostring(prefix))
     end
     local top = self:GetTop()
     for i = 1, top do
         local t = self:Type(i)
         if t == TYPE.LUA_TBOOLEAN then
-            Util:printf("[%s]", tostring(self:ToBoolean(i)))
+            Fmt:printf("[%s]", tostring(self:ToBoolean(i)))
         elseif t == TYPE.LUA_TNUMBER then
             if self:IsInteger(i) then
-                Util:printf("[%s]", tostring(self:ToInteger(i)))
+                Fmt:printf("[%s]", tostring(self:ToInteger(i)))
             else
-                Util:printf("[%s]", tostring(self:ToNumber(i)))
+                Fmt:printf("[%s]", tostring(self:ToNumber(i)))
             end
         elseif t == TYPE.LUA_TNIL then
-            Util:printf("[%s]", "nil")
+            Fmt:printf("[%s]", "nil")
         elseif t == TYPE.LUA_TSTRING then
-            Util:printf('["%s"]', self:ToString(i))
+            Fmt:printf('["%s"]', self:ToString(i))
         else
-            Util:printf("[%s]", self:TypeName(t))
+            Fmt:printf("[%s]", self:TypeName(t))
         end
     end
-    Util:println("")
+    Fmt:println("")
 end
 
 return State
