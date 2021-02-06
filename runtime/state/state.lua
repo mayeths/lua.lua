@@ -10,6 +10,7 @@ local OPERATION = require("lua/operation")
 local STACK = require("lua/stack")
 local TYPE = require("lua/type")
 local Util = require("common/util")
+local Throw = require("common/throw")
 
 local State = {
     stack = nil,
@@ -212,12 +213,28 @@ function State:Compare(idx1, idx2, opid)
     local b = self.stack:get(idx2)
     if opid == OPERATION.LUA_OPEQ then
         return a == b
-    elseif opid == OPERATION.LUA_OPLT then
+    end
+
+    local ta = type(a)
+    local tb = type(b)
+    local bothnum = ta == "number" and tb == "number"
+    if not bothnum then
+        local bothstr = ta == "string" and tb == "string"
+        if not bothstr then
+            if ta == tb then
+                Throw:error("attempt to compare two %s values", ta)
+            else
+                Throw:error("attempt to compare %s with %s", ta, tb)
+            end
+        end
+    end
+
+    if opid == OPERATION.LUA_OPLT then
         return a < b
     elseif opid == OPERATION.LUA_OPLE then
         return a <= b
     else
-        Util:panic("[State:Compare ERROR] Invalid compare op!")
+        return false
     end
 end
 
@@ -258,17 +275,17 @@ end
 
 
 function State:PushBoolean(b)
-    Util:assert(type(b), "boolean",
-        "Pushing a non-boolean value by PushBoolean method"
-    )
+    if type(b) ~= "boolean" then
+        Throw:error("Pushing a non-boolean value by PushBoolean method")
+    end
     self.stack:push(b)
 end
 
 
 function State:PushInteger(n)
-    Util:assert(math.type(n), "integer",
-        "Pushing a non-integer value by PushInteger method"
-    )
+    if math.type(n) ~= "integer" then
+        Throw:error("Pushing a non-integer value by PushInteger method")
+    end
     self.stack:push(n)
 end
 

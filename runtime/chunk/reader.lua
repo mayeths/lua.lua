@@ -4,6 +4,7 @@ local Tag = require("runtime/chunk/tag")
 local Locvar = require("runtime/chunk/locvar")
 local Upvalue = require("runtime/chunk/upvalue")
 local Util = require("common/util")
+local Throw = require("common/throw")
 
 
 local Reader = {
@@ -208,17 +209,39 @@ end
 
 
 function Reader:checkHeader()
-    Util:assert(self:readBytes(4),     Header.LUA_SIGNATURE,    "[Reader:checkHeader ERROR] Lua signature mismatch!")
-    Util:assert(self:readByte(),       Header.LUAC_VERSION,     "[Reader:checkHeader ERROR] Luac version mismatch!")
-    Util:assert(self:readByte(),       Header.LUAC_FORMAT,      "[Reader:checkHeader ERROR] Luac format mismatch!")
-    Util:assert(self:readBytes(6),     Header.LUAC_DATA,        "[Reader:checkHeader ERROR] Luac data mismatch!")
-    Util:assert(self:readByte(),       Header.CINT_SIZE,        "[Reader:checkHeader ERROR] C int size mismatch!")
-    Util:assert(self:readByte(),       Header.CSIZET_SIZE,      "[Reader:checkHeader ERROR] C size_t size mismatch!")
-    Util:assert(self:readByte(),       Header.INSTRUCTION_SIZE, "[Reader:checkHeader ERROR] Instruction size mismatch!")
-    Util:assert(self:readByte(),       Header.LUA_INTEGER_SIZE, "[Reader:checkHeader ERROR] Lua integer size mismatch!")
-    Util:assert(self:readByte(),       Header.LUA_NUMBER_SIZE,  "[Reader:checkHeader ERROR] Lua number size mismatch!")
-    Util:assert(self:readLuaInteger(), Header.LUAC_INT,         "[Reader:checkHeader ERROR] Endianness mismatch!")
-    Util:assert(self:readLuaNumber(),  Header.LUAC_NUM,         "[Reader:checkHeader ERROR] Float format mismatch!")
+    if self:readBytes(4) ~= Header.LUA_SIGNATURE then
+        Throw:error("[Reader:checkHeader ERROR] Lua signature mismatch!")
+    end
+    if self:readByte() ~= Header.LUAC_VERSION then
+        Throw:error("[Reader:checkHeader ERROR] Luac version mismatch!")
+    end
+    if self:readByte() ~= Header.LUAC_FORMAT then
+        Throw:error("[Reader:checkHeader ERROR] Luac format mismatch!")
+    end
+    if self:readBytes(6) ~= Header.LUAC_DATA then
+        Throw:error("[Reader:checkHeader ERROR] Luac data mismatch!")
+    end
+    if self:readByte() ~= Header.CINT_SIZE then
+        Throw:error("[Reader:checkHeader ERROR] C int size mismatch!")
+    end
+    if self:readByte() ~= Header.CSIZET_SIZE then
+        Throw:error("[Reader:checkHeader ERROR] C size_t size mismatch!")
+    end
+    if self:readByte() ~= Header.INSTRUCTION_SIZE then
+        Throw:error("[Reader:checkHeader ERROR] Instruction size mismatch!")
+    end
+    if self:readByte() ~= Header.LUA_INTEGER_SIZE then
+        Throw:error("[Reader:checkHeader ERROR] Lua integer size mismatch!")
+    end
+    if self:readByte() ~= Header.LUA_NUMBER_SIZE then
+        Throw:error("[Reader:checkHeader ERROR] Lua number size mismatch!")
+    end
+    if self:readLuaInteger() ~= Header.LUAC_INT then
+        Throw:error("[Reader:checkHeader ERROR] Endianness mismatch!")
+    end
+    if self:readLuaNumber() ~= Header.LUAC_NUM then
+        Throw:error("[Reader:checkHeader ERROR] Float format mismatch!")
+    end
 end
 
 return Reader
