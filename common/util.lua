@@ -18,14 +18,4 @@ function Util:panic(fmt, ...)
 end
 
 
-function Util:assert(got, expect, errmsg)
-    if got == expect then
-        return
-    end
-    local str1 = tostring(got)
-    local str2 = tostring(expect)
-    local formattedMsg = errmsg.." Got "..str1.." Expect "..str2
-    Util:panic(formattedMsg)
-end
-
 return Util
