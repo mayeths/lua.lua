@@ -241,10 +241,13 @@ end
 
 function State:Len(idx)
     local val = self.stack:get(idx)
-    if type(val) == "table" then
+    local t = self:Type(idx)
+    if t == TYPE.LUA_TSTRING then
+        self.stack:push(#val)
+    elseif t == TYPE.LUA_TTABLE then
         self.stack:push(#val.table)
     else
-        self.stack:push(#val)
+        Throw:error("attempt to get length of a %s value", self:TypeName(t))
     end
 end
 
