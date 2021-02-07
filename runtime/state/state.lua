@@ -253,22 +253,26 @@ end
 
 
 function State:Concat(n)
-    if n == 0 then
-        self.stack.push("")
-    elseif n == 1 then
-        return
-    end
-    for _ = 1, n - 1 do
-        if self:IsString(-1) and self:IsString(-2) then
+    if n >= 2 then
+        for _ = 1, n - 1 do
+            local t2 = self:Type(-1)
+            if t2 ~= TYPE.LUA_TSTRING and t2 ~= TYPE.LUA_TNUMBER then
+                Throw:error("attemp to concatenate a %s value", self:TypeName(t2))
+            end
+            local t1 = self:Type(-2)
+            if t1 ~= TYPE.LUA_TSTRING and t1 ~= TYPE.LUA_TNUMBER then
+                Throw:error("attemp to concatenate a %s value", self:TypeName(t1))
+            end
             local s2 = self:ToString(-1)
             local s1 = self:ToString(-2)
             self.stack:pop()
             self.stack:pop()
             self.stack:push(s1..s2)
-        else
-            Throw:error("[State:Concat ERROR] Concatenation error!")
         end
+    elseif n == 0 then
+        self.stack:push("")
     end
+    -- n == 1; nothing to do
 end
 
 
