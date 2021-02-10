@@ -1,5 +1,5 @@
 local STACK = require("lua/stack")
-local Throw = require("common/throw")
+local Throw = require("util/throw")
 
 -- NOTE: Index start from 1 in Lua API
 

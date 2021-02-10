@@ -1,4 +1,4 @@
-local Color = require("common/color")
+local Color = require("util/color")
 local Throw = {
     mode = "release",
 }

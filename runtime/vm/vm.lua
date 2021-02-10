@@ -1,5 +1,5 @@
 local Opcodes = require("runtime/vm/opcodes")
-local Throw = require("common/throw")
+local Throw = require("util/throw")
 
 local VM = {}
 

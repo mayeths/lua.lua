@@ -1,7 +1,7 @@
 local TYPE = require("lua/type")
 local State = require("runtime/state/state")
-local Fmt = require("common/fmt")
-local Throw = require("common/throw")
+local Fmt = require("util/fmt")
+local Throw = require("util/throw")
 
 
 LLUA = {}

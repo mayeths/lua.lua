@@ -9,8 +9,8 @@ local OPCODE = require("lua/opcode")
 local OPERATION = require("lua/operation")
 local STACK = require("lua/stack")
 local TYPE = require("lua/type")
-local Fmt = require("common/fmt")
-local Throw = require("common/throw")
+local Fmt = require("util/fmt")
+local Throw = require("util/throw")
 
 
 local State = {

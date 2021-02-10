@@ -1,6 +1,6 @@
-local Color = require("common/color")
-local Fmt = require("common/fmt")
-local Throw = require("common/throw")
+local Color = require("util/color")
+local Fmt = require("util/fmt")
+local Throw = require("util/throw")
 
 
 local Lest = {

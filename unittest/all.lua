@@ -1,7 +1,7 @@
-local Color = require("common/color")
-local Fmt = require("common/fmt")
+local Color = require("util/color")
+local Fmt = require("util/fmt")
 local TESTS = {
-    "unittest/common/argTEST",
+    "unittest/util/argTEST",
     "unittest/runtime/state/stateTEST",
 }
 

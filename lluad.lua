@@ -2,8 +2,8 @@ local Chunk = require("runtime/chunk/chunk")
 local Instruction = require("runtime/vm/instruction")
 local OPMODE = require("lua/opmode")
 local OPARGMASK = require("lua/opargmask")
-local Fmt = require("common/fmt")
-local Throw = require("common/throw")
+local Fmt = require("util/fmt")
+local Throw = require("util/throw")
 
 
 LLUAD = {}

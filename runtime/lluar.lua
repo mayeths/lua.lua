@@ -1,5 +1,5 @@
-local Fmt = require("common/fmt")
-local Arg = require("common/arg")
+local Fmt = require("util/fmt")
+local Arg = require("util/arg")
 LLUAR = {
     NAME = "Lua.lua runtime",
     VERSION = "0.1.0",

@@ -1,4 +1,4 @@
-local Throw = require("common/throw")
+local Throw = require("util/throw")
 local Convert = {}
 
 -- Return the converted value and convert result

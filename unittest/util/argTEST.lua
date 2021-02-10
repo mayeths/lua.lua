@@ -1,7 +1,7 @@
-local Arg = require("common/arg")
+local Arg = require("util/arg")
 require("unittest/lest")
 
-SCENARIO("Testing common/arg basic function", function ()
+SCENARIO("Testing util/arg basic function", function ()
 
     GIVEN("a simple argument constructor", function ()
         local name = nil

@@ -1,5 +1,5 @@
 local TYPE = require("lua/type")
-local Fmt = require("common/fmt")
+local Fmt = require("util/fmt")
 
 local function Print(state)
     local nargs = state:GetTop()
