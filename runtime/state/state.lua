@@ -114,47 +114,68 @@ local Operators = {
 
 
 function State:Arith(opid)
+    local op = Operators[opid + 1]
     local a, b
     b = self.stack:pop()
     local isOPUNM = opid == OPERATION.LUA_OPUNM
     local isOPBNOT = opid == OPERATION.LUA_OPBNOT
     if isOPUNM or isOPBNOT then
+        -- For unary operations, add fake 2nd operand
         a = b
     else
         a = self.stack:pop()
     end
 
-    local op = Operators[opid + 1]
-    local isBitwise = op[2] == nil
-    local tryIntFnFirst = op[1] ~= nil
-    if isBitwise then
+    -- Operate only on integers
+    local shouldUseIOp = op[2] == nil
+    if shouldUseIOp then
         local x, ok1 = Convert:any2int(a)
+        if not ok1 then
+            Throw:error("attemp to perform bitwise operation on a non-integer value")
+        end
         local y, ok2 = Convert:any2int(b)
-        if ok1 and ok2 then
-            local result = op[1](x, y)
-            self.stack:push(result)
-            return
+        if not ok2 then
+            Throw:error("attemp to perform bitwise operation on a non-integer value")
         end
-        Throw:error("[State:Arith ERROR] Can not perform bitwise op!")
-    else
-        if tryIntFnFirst then
-            local x, ok1 = Convert:any2int(a)
-            local y, ok2 = Convert:any2int(b)
-            if ok1 and ok2 then
-                local result = op[1](x, y)
-                self.stack:push(result)
-                return
-            end
-        end
-        local x, ok1 = Convert:any2float(a)
-        local y, ok2 = Convert:any2float(b)
-        if ok1 and ok2 then
-            local result = op[2](x, y)
-            self.stack:push(result)
-            return
-        end
-        Throw:error("[State:Arith ERROR] Can not perform any op!")
+        local result = op[1](x, y)
+        self.stack:push(result)
+        return
     end
+
+    -- Operate only on floats
+    local shouldUseFOp = op[1] == nil
+    if shouldUseFOp then
+        local x, ok1 = Convert:any2float(a)
+        if not ok1 then
+            Throw:error("attemp to perform arithmetic on a non-floating point value")
+        end
+        local y, ok2 = Convert:any2float(b)
+        if not ok2 then
+            Throw:error("attemp to perform arithmetic on a non-floating point value")
+        end
+        local result = op[2](x, y)
+        self.stack:push(result)
+        return
+    end
+
+    -- Other operations
+    local x, y, ok1, ok2
+    if math.type(a) == nil then
+        x, ok1 = Convert:any2float(a)
+    else
+        x, ok1 = a, true
+    end
+    if math.type(b) == nil then
+        y, ok2 = Convert:any2float(b)
+    else
+        y, ok2 = b, true
+    end
+    if not ok1 or not ok2 then
+        Throw:error("attemp to perform arithmetic on a non-floating point value")
+    end
+    local result = op[2](x, y)
+    self.stack:push(result)
+    return
 end
 
 
