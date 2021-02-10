@@ -1,4 +1,4 @@
-require("unittest/lest")
+require("test/lest")
 local STACK = require("const/stack")
 local OPERATION = require("const/operation")
 local State = require("runtime/state/state")

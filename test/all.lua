@@ -1,8 +1,8 @@
 local Color = require("util/color")
 local Fmt = require("util/fmt")
 local TESTS = {
-    "unittest/util/argTEST",
-    "unittest/runtime/state/stateTEST",
+    "test/util/argTEST",
+    "test/runtime/state/stateTEST",
 }
 
 function TEST_MAIN()
