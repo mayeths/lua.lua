@@ -1,4 +1,4 @@
-local TYPE = require("lua/type")
+local TYPE = require("const/type")
 local State = require("runtime/state/state")
 local Fmt = require("util/fmt")
 local Throw = require("util/throw")

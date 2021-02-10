@@ -1,6 +1,6 @@
 require("unittest/lest")
-local STACK = require("lua/stack")
-local OPERATION = require("lua/operation")
+local STACK = require("const/stack")
+local OPERATION = require("const/operation")
 local State = require("runtime/state/state")
 
 SCENARIO("Testing runtime/state/state basic function", function ()

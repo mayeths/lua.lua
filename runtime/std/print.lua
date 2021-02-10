@@ -1,4 +1,4 @@
-local TYPE = require("lua/type")
+local TYPE = require("const/type")
 local Fmt = require("util/fmt")
 
 local function Print(state)

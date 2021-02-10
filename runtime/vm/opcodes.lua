@@ -1,7 +1,7 @@
 local Action = require("runtime/vm/action")
-local OPCODE = require("lua/opcode")
-local OPMODE = require("lua/opmode")
-local OPARGMASK = require("lua/opargmask")
+local OPCODE = require("const/opcode")
+local OPMODE = require("const/opmode")
+local OPARGMASK = require("const/opargmask")
 
 local Opcode = {
     testFlag = nil,
