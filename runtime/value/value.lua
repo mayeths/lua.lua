@@ -14,10 +14,12 @@ function Value.TypeID(val)
     elseif valtype == "string" then
         return TYPE.LUA_TSTRING
     elseif valtype == "table" then
-        if not val.t then
-            Throw:error("[Value.TypeID ERROR] Unknown type wrapper!")
+        if val.t == "table" then
+            return TYPE.LUA_TTABLE
+        elseif val.t == "function" then
+            return TYPE.LUA_TFUNCTION
         end
-        return val.t
+        Throw:error("[Value.TypeID ERROR] Unknown type wrapper!")
     end
     Throw:error("[Value.TypeID ERROR] Unknown type!")
 end
