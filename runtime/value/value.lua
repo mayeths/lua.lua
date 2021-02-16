@@ -40,7 +40,7 @@ end
 
 function Value.TypeID2Name(tid)
     if tid == TYPE.LUA_TNONE then
-        return "no value"
+        return "none"
     elseif tid == TYPE.LUA_TNIL then
         return "nil"
     elseif tid == TYPE.LUA_TBOOLEAN then
@@ -55,14 +55,17 @@ function Value.TypeID2Name(tid)
         return "function"
     elseif tid == TYPE.LUA_TTHREAD then
         return "thread"
-    else
+    elseif tid == TYPE.LUA_TUSERDATA then
         return "userdata"
     end
+    Throw:error("[Value.TypeName ERROR] Unknown typeid %d!", tid)
 end
 
 
 function Value.TypeName2ID(tname)
-    if tname == "nil" then
+    if tname == "none" then
+        return TYPE.LUA_TNONE
+    elseif tname == "nil" then
         return TYPE.LUA_TNIL
     elseif tname == "boolean" then
         return TYPE.LUA_TBOOLEAN

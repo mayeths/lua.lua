@@ -35,21 +35,21 @@ function State:printStack(prefix)
     end
     local top = self:GetTop()
     for i = 1, top do
-        local t = self:Type(i)
-        if t == TYPE.LUA_TBOOLEAN then
+        local tid = self:Type(i)
+        if tid == TYPE.LUA_TBOOLEAN then
             Fmt:printf("[%s]", tostring(self:ToBoolean(i)))
-        elseif t == TYPE.LUA_TNUMBER then
+        elseif tid == TYPE.LUA_TNUMBER then
             if self:IsInteger(i) then
                 Fmt:printf("[%s]", tostring(self:ToInteger(i)))
             else
                 Fmt:printf("[%s]", tostring(self:ToNumber(i)))
             end
-        elseif t == TYPE.LUA_TNIL then
+        elseif tid == TYPE.LUA_TNIL then
             Fmt:printf("[%s]", "nil")
-        elseif t == TYPE.LUA_TSTRING then
+        elseif tid == TYPE.LUA_TSTRING then
             Fmt:printf('["%s"]', self:ToString(i))
         else
-            Fmt:printf("[%s]", self:TypeName(t))
+            Fmt:printf("[%s]", Value.TypeID2Name(tid))
         end
     end
     Fmt:println("")
@@ -268,13 +268,13 @@ end
 function State:Concat(n)
     if n >= 2 then
         for _ = 1, n - 1 do
-            local t2 = self:Type(-1)
-            if t2 ~= TYPE.LUA_TSTRING and t2 ~= TYPE.LUA_TNUMBER then
-                Throw:error("attemp to concatenate a %s value", self:TypeName(t2))
+            local tid2 = self:Type(-1)
+            if tid2 ~= TYPE.LUA_TSTRING and tid2 ~= TYPE.LUA_TNUMBER then
+                Throw:error("attemp to concatenate a %s value", Value.TypeID2Name(tid2))
             end
-            local t1 = self:Type(-2)
-            if t1 ~= TYPE.LUA_TSTRING and t1 ~= TYPE.LUA_TNUMBER then
-                Throw:error("attemp to concatenate a %s value", self:TypeName(t1))
+            local tid1 = self:Type(-2)
+            if tid1 ~= TYPE.LUA_TSTRING and tid1 ~= TYPE.LUA_TNUMBER then
+                Throw:error("attemp to concatenate a %s value", Value.TypeID2Name(tid1))
             end
             local s2 = self:ToString(-1)
             local s1 = self:ToString(-2)
@@ -431,13 +431,13 @@ end
 
 function State:Len(idx)
     local val = self.stack:get(idx)
-    local t = self:Type(idx)
-    if t == TYPE.LUA_TSTRING then
+    local tid = self:Type(idx)
+    if tid == TYPE.LUA_TSTRING then
         self.stack:push(#val)
-    elseif t == TYPE.LUA_TTABLE then
+    elseif tid == TYPE.LUA_TTABLE then
         self.stack:push(#val.table)
     else
-        Throw:error("attempt to get length of a %s value", self:TypeName(t))
+        Throw:error("attempt to get length of a %s value", Value.TypeID2Name(tid))
     end
 end
 
@@ -729,49 +729,7 @@ function State:Type(idx)
         return TYPE.LUA_TNONE
     end
     local val = self.stack:get(idx)
-    local valtype = type(val)
-    if valtype == "nil" then
-        return TYPE.LUA_TNIL
-    elseif valtype == "boolean" then
-        return TYPE.LUA_TBOOLEAN
-    elseif valtype == "number" then
-        return TYPE.LUA_TNUMBER
-    elseif valtype == "string" then
-        return TYPE.LUA_TSTRING
-    elseif valtype == "table" then
-        if val.t == "table" then
-            return TYPE.LUA_TTABLE
-        elseif val.t == "function" then
-            return TYPE.LUA_TFUNCTION
-        else
-            Throw:error("[State:Type ERROR] Unknown type wrapper!")
-        end
-    else
-        Throw:error("[State:Type ERROR] Unknown type!")
-    end
-end
-
-
-function State:TypeName(tid)
-    if tid == TYPE.LUA_TNONE then
-        return "no value"
-    elseif tid == TYPE.LUA_TNIL then
-        return "nil"
-    elseif tid == TYPE.LUA_TBOOLEAN then
-        return "boolean"
-    elseif tid == TYPE.LUA_TNUMBER then
-        return "number"
-    elseif tid == TYPE.LUA_TSTRING then
-        return "string"
-    elseif tid == TYPE.LUA_TTABLE then
-        return "table"
-    elseif tid == TYPE.LUA_TFUNCTION then
-        return "function"
-    elseif tid == TYPE.LUA_TTHREAD then
-        return "thread"
-    else
-        return "userdata"
-    end
+    return Value.TypeID(val)
 end
 
 
