@@ -2,7 +2,7 @@ local Stack = require("runtime/stack/stack")
 local Closure = require("runtime/value/closure")
 local Table = require("runtime/value/table")
 local Chunk = require("runtime/chunk/chunk")
-local Convert = require("runtime/state/convert")
+local Value = require("runtime/value/value")
 local Instruction = require("runtime/vm/instruction")
 local VM = require("runtime/vm/vm")
 local OPCODE = require("const/opcode")
@@ -120,62 +120,34 @@ function State:Arith(opid)
     local isOPUNM = opid == OPERATION.LUA_OPUNM
     local isOPBNOT = opid == OPERATION.LUA_OPBNOT
     if isOPUNM or isOPBNOT then
-        -- For unary operations, add fake 2nd operand
         a = b
     else
         a = self.stack:pop()
     end
 
-    -- Operate only on integers
-    local shouldUseIOp = op[2] == nil
-    if shouldUseIOp then
-        local x, ok1 = Convert:any2int(a)
-        if not ok1 then
-            Throw:error("attemp to perform bitwise operation on a non-integer value")
-        end
-        local y, ok2 = Convert:any2int(b)
-        if not ok2 then
-            Throw:error("attemp to perform bitwise operation on a non-integer value")
-        end
-        local result = op[1](x, y)
-        self.stack:push(result)
-        return
-    end
-
-    -- Operate only on floats
-    local shouldUseFOp = op[1] == nil
-    if shouldUseFOp then
-        local x, ok1 = Convert:any2float(a)
-        if not ok1 then
-            Throw:error("attemp to perform arithmetic on a non-floating point value")
-        end
-        local y, ok2 = Convert:any2float(b)
-        if not ok2 then
-            Throw:error("attemp to perform arithmetic on a non-floating point value")
-        end
-        local result = op[2](x, y)
-        self.stack:push(result)
-        return
-    end
-
-    -- Other operations
-    local x, y, ok1, ok2
-    if math.type(a) == nil then
-        x, ok1 = Convert:any2float(a)
+    local errmsg, convertFn, opFn
+    if op[2] == nil then
+        errmsg = "attemp to perform bitwise operation on a non-integer value"
+        convertFn = Value.Any2Int
+        opFn = op[1]
     else
-        x, ok1 = a, true
+        errmsg = "attemp to perform arithmetic on a non-floating point value"
+        convertFn = Value.Any2Float
+        opFn = op[2]
     end
-    if math.type(b) == nil then
-        y, ok2 = Convert:any2float(b)
+
+    local x, ok1 = convertFn(a)
+    local y, ok2 = convertFn(b)
+    local result, ok3
+    if ok1 and ok2 then
+        result, ok3 = opFn(x, y), true
     else
         y, ok2 = b, true
     end
-    if not ok1 or not ok2 then
-        Throw:error("attemp to perform arithmetic on a non-floating point value")
+    if not ok3 then
+        Throw:error(errmsg)
     end
-    local result = op[2](x, y)
     self.stack:push(result)
-    return
 end
 
 
