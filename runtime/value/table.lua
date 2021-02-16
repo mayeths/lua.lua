@@ -1,6 +1,7 @@
 local Table = {
     t = "table",
     table = nil,
+    metatable = nil,
 }
 
 
