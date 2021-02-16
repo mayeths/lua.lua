@@ -1,21 +1,21 @@
 local Os = require("build/os")
 local Flatten = require("build/flatten")
 BUILD = {
-    default_cmd = "gcc -o @out @in @lib -I @inc -O2 -Wall -lm -ldl",
     help_msg = [=[
-Usage: lua build/build.lua <in> <out> <lib> <inc> <"command">
-       <"command"> is string containing @in, @out, @lib and @inc.
-       ------
-       @in: input lua script
-       @out: output executable file
-       @lib: lua 5.3.3 static library (liblua53.a)
-       @inc: lua 5.3.3 include directory (include/)
-       ------
-       Default command is "%s".
-       We will replace @in with your <in> and so on.
-Example:
-       lua build/build.lua llua.lua llua path_to_lib path_to_inc \
-       "%s"
+USAGE
+      lua build/build.lua <in> <out> <lib> <inc> <"command">
+      "command" is string containing @in, @out, @lib and @inc.
+      We will replace @in with your <in> and so on.
+      See template.env if dotenv is supported.
+      ------
+      @in: input lua script
+      @out: output executable file
+      @lib: lua 5.3.3 static library (liblua53.a)
+      @inc: lua 5.3.3 include directory (include/)
+      ------
+EXAMPLE
+      lua build/build.lua llua.lua llua path_to_lib path_to_inc \
+      "gcc -o @out @in @lib -I @inc -O2 -Wall -lm -ldl"
 ]=],
     pcall_status = "_ret_status",
     c_template = [[
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
   }
   int @pcall_status_here;
   lua_setglobal(L, "arg");
-  @cee_here
+  @cee_section_here
   lua_close(L);
   return @pcall_status_here;
 }
@@ -47,24 +47,23 @@ int main(int argc, char *argv[]) {
 
 
 function BUILD:main()
-    if #arg < 2 then
-        self:help()
-    end
     if #arg >= 6 then
-        io.stderr:write("Error: too many arguments."
-        .." Maybe you forget to use quotes(\") with command?\n\n")
-        self:help()
+        self:help("ERROR too many arguments."
+        .." Maybe you forget to use quotes(\") with command?")
     end
+    dofile("build/dotenv.lua")
+    local in_file = self:parse("<in>", 1, "IN")
+    local out_file = self:parse("<out>", 2, "OUT")
+    local lib_file = self:parse("<lib>", 3, "LIB")
+    local inc_dir = self:parse("<inc>", 4, "INC")
+    local cmd = self:parse('<"command">', 5, "COMMAND")
 
-    local in_file = arg[1]
-    local out_file = arg[2]
-    local lib_file = arg[3]
-    local inc_dir = arg[4]
-    local cmd = arg[5] or self.default_cmd
-
-    local flatten_file = in_file..".flatten"
-    local cee_file = in_file..".cee"
-    local c_file = in_file..".c"
+    Os:recognize()
+    Os:mkdir("dist/")
+    local flatten_file = "dist/"..in_file..".flatten"
+    local cee_file = "dist/"..in_file..".cee"
+    local c_file = "dist/"..in_file..".c"
+    local target = "dist/"..out_file
     self:flatten(in_file, flatten_file)
     self:convert(flatten_file, cee_file)
     self:generate(cee_file, c_file)
@@ -72,8 +71,8 @@ function BUILD:main()
     cmd = string.gsub(cmd, "@inc", inc_dir)
     cmd = string.gsub(cmd, "@lib", lib_file)
     cmd = string.gsub(cmd, "@in", c_file)
-    cmd = string.gsub(cmd, "@out", out_file)
-    Os:recognize()
+    cmd = string.gsub(cmd, "@out", target)
+    print(cmd)
     Os:run(cmd)
     Os:rm(flatten_file)
     Os:rm(cee_file)
@@ -81,8 +80,20 @@ function BUILD:main()
 end
 
 
-function BUILD:help()
-    io.stderr:write(string.format(self.help_msg, self.default_cmd, self.default_cmd))
+function BUILD:parse(name, argidx, envname)
+    if not arg[argidx] and not _G[envname] then
+        self:help("ERROR cannot find "..name
+        .." in arguments or "..envname.." in .env file.")
+    end
+    return arg[argidx] or _G[envname]
+end
+
+
+function BUILD:help(prefix)
+    if prefix then
+        io.stderr:write(prefix.."\n")
+    end
+    io.stderr:write(self.help_msg)
     os.exit(1)
 end
 
@@ -93,11 +104,13 @@ end
 
 
 function BUILD:convert(file, cee_file)
-    io.output(cee_file)
+    local temp = arg
     arg = { "+"..file, self.pcall_status }
+    io.output(cee_file)
     dofile("build/bin2cee.lua")
     io.output():close()
     io.output(io.stdout)
+    arg = temp
 end
 
 
@@ -110,7 +123,7 @@ function BUILD:generate(cee_file, c_file)
     ceefd:close()
 
     local out = self.c_template
-    out = string.gsub(out, "@cee_here", cee)
+    out = string.gsub(out, "@cee_section_here", cee)
     out = string.gsub(out, "@pcall_status_here", self.pcall_status)
     local outfd, outerr = io.open(c_file, "w")
     if not outfd then

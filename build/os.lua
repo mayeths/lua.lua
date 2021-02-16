@@ -26,6 +26,18 @@ function Os:run(cmd)
 end
 
 
+function Os:mkdir(path)
+    local cmd
+    if self.current == "unix-like" then
+        cmd = "mkdir -p %s"
+    elseif self.current == "windows" then
+        cmd = "md %s"
+    end
+    cmd = string.format(cmd, path)
+    os.execute(cmd)
+end
+
+
 function Os:rm(file)
     local cmd
     if self.current == "unix-like" then

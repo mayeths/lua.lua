@@ -4,3 +4,6 @@ temp.*
 *.exe
 *.out
 TODO
+*.env
+!template.env
+dist/
