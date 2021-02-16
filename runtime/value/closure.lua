@@ -2,9 +2,9 @@
 -- https://www.lua.org/manual/5.3/manual.html#3.4.11
 -- > Whenever Lua executes the function definition, the function is instantiated
 -- > This function instance (or closure) is the final value of the expression
-
+local TYPE = require("const/type")
 local Closure = {
-    t = "function",
+    t = TYPE.LUA_TFUNCTION,
     upvalues = nil,
     uvnum = nil,
     proto = nil,

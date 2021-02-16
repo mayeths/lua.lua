@@ -154,7 +154,7 @@ end
 function State:Call(nProvidedParams, nRequestedResults)
     local providedParams = self.stack:popN(nProvidedParams)
     local closure = self.stack:pop()
-    if type(closure) ~= "table" or closure.t ~= "function" then
+    if type(closure) ~= "table" or closure.t ~= TYPE.LUA_TFUNCTION then
         Throw:error("[State:Call ERROR] not a function")
     end
 

@@ -14,9 +14,9 @@ function Value.TypeID(val)
     elseif valtype == "string" then
         return TYPE.LUA_TSTRING
     elseif valtype == "table" then
-        if val.t == "table" then
+        if val.t == TYPE.LUA_TTABLE then
             return TYPE.LUA_TTABLE
-        elseif val.t == "function" then
+        elseif val.t == TYPE.LUA_TFUNCTION then
             return TYPE.LUA_TFUNCTION
         end
         Throw:error("[Value.TypeID ERROR] Unknown type wrapper!")

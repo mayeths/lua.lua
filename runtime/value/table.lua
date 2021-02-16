@@ -1,5 +1,6 @@
+local TYPE = require("const/type")
 local Table = {
-    t = "table",
+    t = TYPE.LUA_TTABLE,
     table = nil,
     metatable = nil,
 }
