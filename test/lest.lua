@@ -89,7 +89,10 @@ end
 
 
 function Lest.ConfirmExpect(gotval, expectval, connectword)
-    if expectval == gotval then
+    -- Prevent number equal integer
+    local sametype = math.type(gotval) == math.type(expectval)
+    local samevalue = expectval == gotval
+    if sametype and samevalue then
         return
     end
     local info = debug.getinfo(3, "nlS")
