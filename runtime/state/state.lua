@@ -16,6 +16,7 @@ local Throw = require("util/throw")
 local State = {
     stack = nil,
     registry = nil,
+    metatables = nil,
 }
 
 
@@ -25,6 +26,7 @@ function State:new()
     self.registry = Table:new()
     self.registry.table[STACK.LUA_RIDX_GLOBALS] = Table:new()
     self.stack = Stack:new(STACK.LUA_MINSTACK, self)
+    self.metatables = {}
     return self
 end
 
@@ -89,20 +91,20 @@ local Fn = {
 }
 
 local Operators = {
-    { Fn.add , Fn.add ,},
-    { Fn.sub , Fn.sub ,},
-    { Fn.mul , Fn.mul ,},
-    { Fn.mod , Fn.mod ,},
-    { nil    , Fn.pow ,},
-    { nil    , Fn.div ,},
-    { Fn.idiv, Fn.idiv,},
-    { Fn.band, nil    ,},
-    { Fn.bor , nil    ,},
-    { Fn.bxor, nil    ,},
-    { Fn.shl , nil    ,},
-    { Fn.shr , nil    ,},
-    { Fn.unm , Fn.unm ,},
-    { Fn.bnot, nil    ,},
+    { Fn.add,  Fn.add,  "__add"  },
+    { Fn.sub,  Fn.sub,  "__sub"  },
+    { Fn.mul,  Fn.mul,  "__mul"  },
+    { Fn.mod,  Fn.mod,  "__mod"  },
+    { nil,     Fn.pow,  "__pow"  },
+    { nil,     Fn.div,  "__div"  },
+    { Fn.idiv, Fn.idiv, "__idiv" },
+    { Fn.band, nil,     "__band" },
+    { Fn.bor,  nil,     "__bor"  },
+    { Fn.bxor, nil,     "__bxor" },
+    { Fn.shl,  nil,     "__shl"  },
+    { Fn.shr,  nil,     "__shr"  },
+    { Fn.unm,  Fn.unm,  "__unm"  },
+    { Fn.bnot, nil,     "__bnot" },
 }
 
 
@@ -123,10 +125,14 @@ function State:Arith(opid)
         errmsg = "attemp to perform bitwise operation on a non-integer value"
         convertFn = Value.Any2Int
         opFn = op[1]
-    else
+    elseif op[1] == nil then
         errmsg = "attemp to perform arithmetic on a non-floating point value"
         convertFn = Value.Any2Float
         opFn = op[2]
+    else
+        errmsg = "attemp to perform arithmetic on a non-number value"
+        convertFn = Value.Any2Int
+        opFn = op[1]
     end
 
     local x, ok1 = convertFn(a)
@@ -135,7 +141,7 @@ function State:Arith(opid)
     if ok1 and ok2 then
         result, ok3 = opFn(x, y), true
     else
-        y, ok2 = b, true
+        result, ok3 = Value.CallMetamethod(a, b, op[3], self)
     end
     if not ok3 then
         Throw:error(errmsg)
@@ -230,55 +236,76 @@ function State:Compare(idx1, idx2, opid)
 
     local a = self.stack:get(idx1)
     local b = self.stack:get(idx2)
-    if opid == OPERATION.LUA_OPEQ then
-        return a == b
-    end
+    local ta = self:Type(idx1)
+    local tb = self:Type(idx2)
+    local bothnum = ta == TYPE.LUA_TNUMBER and tb == TYPE.LUA_TNUMBER
+    local bothstr = ta == TYPE.LUA_TSTRING and tb == TYPE.LUA_TSTRING
+    local bothtable = ta == TYPE.LUA_TTABLE and tb == TYPE.LUA_TTABLE
 
-    local ta = type(a)
-    local tb = type(b)
-    local bothnum = ta == "number" and tb == "number"
-    if not bothnum then
-        local bothstr = ta == "string" and tb == "string"
-        if not bothstr then
-            if ta == tb then
-                Throw:error("attempt to compare two %s values", ta)
-            else
-                Throw:error("attempt to compare %s with %s", ta, tb)
-            end
+    if opid == OPERATION.LUA_OPEQ then
+        if a == b then
+            return true
+        elseif bothtable then
+            local result = Value.CallMetamethod(a, b, "__eq", self)
+            return Value.Any2Boolean(result)
+        else
+            return false
+        end
+    elseif opid == OPERATION.LUA_OPLT then
+        if bothnum or bothstr then
+            return a < b
+        end
+        local result, ok = Value.CallMetamethod(a, b, "__lt", self)
+        if ok then
+            return Value.Any2Boolean(result)
+        end
+    elseif opid == OPERATION.LUA_OPLE then
+        if bothnum or bothstr then
+            return a <= b
+        end
+        local result1, ok1 = Value.CallMetamethod(a, b, "__le", self)
+        if ok1 then
+            return Value.Any2Boolean(result1)
+        end
+        local result2, ok2 = Value.CallMetamethod(b, a, "__lt", self)
+        if ok2 then
+            return not Value.Any2Boolean(result2)
         end
     end
 
-    if opid == OPERATION.LUA_OPLT then
-        return a < b
-    elseif opid == OPERATION.LUA_OPLE then
-        return a <= b
+    if ta == tb then
+        Throw:error("attempt to compare two %s values", ta)
     else
-        return false
+        Throw:error("attempt to compare %s with %s", ta, tb)
     end
 end
 
 
 function State:Concat(n)
-    if n >= 2 then
-        for _ = 1, n - 1 do
-            local tid2 = self:Type(-1)
-            if tid2 ~= TYPE.LUA_TSTRING and tid2 ~= TYPE.LUA_TNUMBER then
-                Throw:error("attemp to concatenate a %s value", Value.TypeID2Name(tid2))
-            end
-            local tid1 = self:Type(-2)
-            if tid1 ~= TYPE.LUA_TSTRING and tid1 ~= TYPE.LUA_TNUMBER then
-                Throw:error("attemp to concatenate a %s value", Value.TypeID2Name(tid1))
-            end
-            local s2 = self:ToString(-1)
-            local s1 = self:ToString(-2)
-            self.stack:pop()
-            self.stack:pop()
-            self.stack:push(s1..s2)
-        end
-    elseif n == 0 then
+    if n == 0 then
         self.stack:push("")
+        return
+    elseif n == 1 then
+        return
     end
-    -- n == 1; nothing to do
+    for _ = 1, n - 1 do
+        local s2, ok2 = self:ToStringX(-1)
+        local s1, ok1 = self:ToStringX(-2)
+        local b = self.stack:pop()
+        local a = self.stack:pop()
+        if ok1 and ok2 then
+            self.stack:push(s1..s2)
+        else
+            local result, ok = Value.CallMetamethod(a, b, "__concat", self)
+            if ok then
+                self.stack:push(result)
+            elseif not ok1 then -- Failed. Figure out the problem
+                Throw:error("attemp to concatenate a %s value", Value.TypeName(a))
+            elseif not ok2 then
+                Throw:error("attemp to concatenate a %s value", Value.TypeName(b))
+            end
+        end
+    end
 end
 
 
@@ -427,11 +454,18 @@ function State:Len(idx)
     local tid = self:Type(idx)
     if tid == TYPE.LUA_TSTRING then
         self.stack:push(#val)
-    elseif tid == TYPE.LUA_TTABLE then
-        self.stack:push(#val.table)
-    else
-        Throw:error("attempt to get length of a %s value", Value.TypeID2Name(tid))
+        return
     end
+    local result, ok = Value.CallMetamethod(val, val, "__len", self)
+    if ok then
+        self.stack:push(result)
+        return
+    end
+    if tid == TYPE.LUA_TTABLE then
+        self.stack:push(#val.table)
+        return
+    end
+    Throw:error("attempt to get length of a %s value", Value.TypeID2Name(tid))
 end
 
 

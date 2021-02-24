@@ -187,4 +187,75 @@ function Value.Str2Float(val)
 end
 
 
+function Value.GetMetatable(val, state)
+    if type(val) == "table" and val.t == TYPE.LUA_TTABLE then
+        return val.metatable
+    else
+        return state.metatables[Value.TypeID(val)]
+    end
+end
+
+
+function Value.SetMetatable(val, mt, state)
+    if type(val) == "table" and val.t == TYPE.LUA_TTABLE then
+        val.metatable = mt
+    else
+        state.metatables[Value.TypeID(val)] = mt
+    end
+end
+
+
+function Value.GetMetaField(val, field, state)
+    local mt = Value.GetMetatable(val, state)
+    if not mt or type(mt) ~= "table" or mt.t ~= TYPE.LUA_TTABLE then
+        return nil
+    end
+    return mt.table[field]
+end
+
+
+function Value.CallMetamethod(a, b, name, state)
+    local metamethod = Value.GetMetaField(a, name, state)
+    if not metamethod then
+        metamethod = Value.GetMetaField(b, name, state)
+        if not metamethod then
+            return nil, false
+        end
+    end
+    state.stack:ensure(4)
+    state.stack:push(metamethod)
+    state.stack:push(a)
+    state.stack:push(b)
+    state:Call(2, 1)
+    return state.stack:pop(), true
+end
+
+
+function Value.GetTable(val, k, state)
+    local typ = Value.TypeID(val)
+    if typ == TYPE.LUA_TTABLE then
+        local result = val.table[k]
+        if result ~= nil then
+            state.stack:push(result)
+            return Value.TypeID(result)
+        end
+    end
+
+    local __index = Value.GetMetaField(val, "__index", state)
+    local __indext = Value.TypeID(__index)
+    if __indext == TYPE.LUA_TTABLE then
+        return Value.GetTable(__index, k, state)
+    elseif __indext == TYPE.LUA_TFUNCTION then
+        state.stack:push(__index)
+        state.stack:push(val)
+        state.stack:push(k)
+        state:Call(2, 1)
+        local result = state.stack:get(-1)
+        return Value.TypeID(result)
+    else
+        -- TODO: error
+    end
+end
+
+
 return Value
