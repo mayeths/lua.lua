@@ -1,6 +1,6 @@
 # ✨Lua.lua
 
-[Lua](https://www.lua.org/) language implemented in Lua (half-finished).
+[Lua](https://www.lua.org/) language implemented in Lua (half-finished). This project aims to [self-hosting](https://en.wikipedia.org/wiki/Self-hosting_(compilers)) Lua like [Golang](https://en.wikipedia.org/wiki/Go_(programming_language)#History) does (see change history of golang's version 1.5-1.5.4), by providing compiler and runtime implemented in Lua.
 
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/mayeths/lua.lua)
 
