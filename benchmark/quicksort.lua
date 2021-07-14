@@ -35,4 +35,15 @@ function Sum(array)
 end
 
 local A = {8,7,1,9,4,2,6,5,3}
+
+print("Before quick sort:")
+for i = 1, #A do
+    print(A[i])
+end
+
 QuickSort(A)
+
+print("After quick sort:")
+for i = 1, #A do
+    print(A[i])
+end

@@ -1,7 +1,28 @@
 # ✨Lua.lua
 
-[Lua](https://www.lua.org/) implemented in Lua.
+[Lua](https://www.lua.org/) language implemented in Lua (half-finished).
 
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/mayeths/lua.lua)
+
+### Usage
+
+```bash
+git clone http://github.com/mayeths/lua.lua
+cd lua.lua
+
+luac -o quicksort.bytecode ./benchmark/quicksort.lua
+### Use lua runtime
+lua ./quicksort.bytecode
+### Use llua runtime
+lua ./llua.lua ./quicksort.bytecode
+```
+
+### Components
+
+- Compiler (not implemented)
+- Runtime
+    - Virtual Machine (implemented without solid tests)
+    - Standard Library (only `print()`)
 
 ### Dependence
 

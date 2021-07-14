@@ -3,6 +3,7 @@ temp/
 temp.*
 *.exe
 *.out
+*.bytecode
 TODO
 *.env
 !template.env
